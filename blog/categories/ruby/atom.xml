@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Mr. Anderson]]></title>
-  <link href="http://kmc653.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: ruby | Mr. Anderson]]></title>
+  <link href="http://kmc653.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
   <updated>2014-12-23T11:42:33+08:00</updated>
   <id>http://kmc653.github.io/</id>

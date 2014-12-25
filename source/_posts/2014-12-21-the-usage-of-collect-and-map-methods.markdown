@@ -3,7 +3,7 @@ layout: post
 title: "The Usage of Collect &amp; Map Methods"
 date: 2014-12-21 22:57:15 +0800
 comments: true
-categories: Ruby
+category: Ruby
 author: kmc653
 ---
 #Collect

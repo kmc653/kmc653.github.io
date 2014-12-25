@@ -4,7 +4,7 @@
   <title><![CDATA[Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2014-12-23T11:42:33+08:00</updated>
+  <updated>2014-12-25T11:43:05+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The Usage of Module#delegate]]></title>
+    <link href="http://kmc653.github.io/blog/2014/12/25/the-usage-of-module-number-delegate/"/>
+    <updated>2014-12-25T11:06:29+08:00</updated>
+    <id>http://kmc653.github.io/blog/2014/12/25/the-usage-of-module-number-delegate</id>
+    <content type="html"><![CDATA[<h1>Delegate</h1>
+
+<p><code>delegate</code> is particularly useful with Active Record associations:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Movie &lt; ActiveRecord::Base
+</span><span class='line'>  belongs_to :director
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>class Director &lt; ActiveRecord::Base
+</span><span class='line'>  # has a string attribute 'name'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If we want to get the director&rsquo;s name of the movie, we should use <code>@movie.director.name</code>. However, if we use <code>delegate</code> in the code:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Movie &lt; ActiveRecord::Base
+</span><span class='line'>  belongs_to :director
+</span><span class='line'>  delegate :name, to: :director
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can only use <code>@movie.name</code> to get the name of director. Moreover, if we add options <code>prefix: true</code>:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Movie &lt; ActiveRecord::Base
+</span><span class='line'>  belongs_to :director
+</span><span class='line'>  delegate :name, to: :director, prefix: true
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Only use <code>@movie.director_name</code> to get the director&rsquo;s name. It&rsquo;s more readable than before. We can also specify a custom prefix <code>:filmmaker</code>instead of <code>true</code>, then use <code>@movie.filmmaker_name</code> to get the same result.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[The Usage of Collect &amp; Map Methods]]></title>

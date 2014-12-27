@@ -1,0 +1,190 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>The Usage of Collect &amp; Map Methods - Mr. Anderson</title>
+	<meta name="author" content="Kai-Min Change">
+
+	
+	<meta name="description" content="Collect collect { | item | block } => array
+collect => Enumerator The method collect is used in an array. Returns a new array with the results of &hellip;&#8221;>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Mr. Anderson" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script async="true" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Mr. Anderson</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="https://www.google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:kmc653.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="https://www.google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:kmc653.github.io">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">The Usage of Collect &amp; Map Methods</h2>
+	<div class="entry-content"><h1>Collect</h1>
+
+<ul>
+<li><em>collect { | item | block } => array</em></li>
+<li><em>collect => Enumerator</em></li>
+</ul>
+
+
+<p>The method <code>collect</code> is used in an array. Returns a new array with the results of executing block once for each element in array.<br/>
+If no block is given, an enummerator is returned instead.</p>
+
+<pre><code>['a', 'b', 'c'].collect{ |letter| letter.capitalize }     #=&gt; ["A", "B", "C"]
+</code></pre>
+
+<p>There is a concise way doing the same work:</p>
+
+<pre><code>['a', 'b', 'c'].collect(&amp;:capitalize)     #=&gt; ["A", "B", "C"]
+</code></pre>
+
+<p>The element will be replaced with the value returned by block if adding a <code>!</code></p>
+
+<pre><code>a = ['a', 'b', 'c'].collect!(&amp;:capitalize)
+a     #=&gt; ["A", "B", "C"]
+</code></pre>
+
+<h1>Map</h1>
+
+<ul>
+<li><em>map { | item | block } => array</em></li>
+<li><em>map => Enumerator</em></li>
+</ul>
+
+
+<p>The method <code>map</code> is also used in an array.</p>
+
+<pre><code>a = ['a', 'b', 'c']
+a.map { |x| x + x }     #=&gt; ["aa", "bb", "cc"]
+</code></pre>
+
+<p>There is also a shorthand way:</p>
+
+<pre><code>['a', 'b', 'c'].map(&amp;:capitalize)     #=&gt; ["A", "B", "C"]
+</code></pre>
+
+<p>The element will be replaced with the value returned by block if adding a <code>!</code></p>
+
+<pre><code>a = ['A', 'B', 'C']
+a.map!(&amp;:downcase)
+a     #=&gt; ["a", "b", "c"]
+</code></pre>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-21T22:57:15+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby/'>ruby</a>
+
+
+</div>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		<a class="addthis_button_tweet"></a>
+		
+		
+		
+	</div>
+	
+</div>
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2014
+
+    Kai-Min Change
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>

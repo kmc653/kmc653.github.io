@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ruby on rails | Mr. Anderson]]></title>
+  <link href="http://kmc653.github.io/blog/categories/ruby-on-rails/atom.xml" rel="self"/>
+  <link href="http://kmc653.github.io/"/>
+  <updated>2014-12-27T23:01:44+08:00</updated>
+  <id>http://kmc653.github.io/</id>
+  <author>
+    <name><![CDATA[Kai-Min Change]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[The Usage of Module#delegate]]></title>
+    <link href="http://kmc653.github.io/blog/2014/12/25/the-usage-of-module-number-delegate/"/>
+    <updated>2014-12-25T11:06:29+08:00</updated>
+    <id>http://kmc653.github.io/blog/2014/12/25/the-usage-of-module-number-delegate</id>
+    <content type="html"><![CDATA[<h1>Delegate</h1>
+
+<p><code>delegate</code> is particularly useful with Active Record associations:<br/>
+&#8220;`
+class Movie &lt; ActiveRecord::Base
+  belongs_to :director
+end</p>
+
+<p>class Director &lt; ActiveRecord::Base
+  # has a string attribute &lsquo;name&rsquo;
+end
+<code>
+If we want to get the director's name of the movie, we should use `@movie.director.name`. However, if we use `delegate` in the code:
+</code>
+class Movie &lt; ActiveRecord::Base
+  belongs_to :director
+  delegate :name, to: :director
+end
+<code>
+We can only use `@movie.name` to get the name of director. Moreover, if we add options `prefix: true`:
+</code>
+class Movie &lt; ActiveRecord::Base
+  belongs_to :director
+  delegate :name, to: :director, prefix: true
+end
+<code>``
+Only use</code>@movie.director_name<code>to get the director's name. It's more readable than before. We can also specify a custom prefix</code>:filmmaker<code>instead of</code>true<code>, then use</code>@movie.filmmaker_name` to get the same result.</p>
+]]></content>
+  </entry>
+  
+</feed>

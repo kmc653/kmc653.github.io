@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2014-12-25T11:43:05+08:00</updated>
+  <updated>2014-12-28T14:24:18+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,53 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The Usage of strip, slice and split Methods of String]]></title>
+    <link href="http://kmc653.github.io/blog/2014/12/27/the-usage-of-method-number-strip-and-slice-of-string/"/>
+    <updated>2014-12-27T19:49:30+08:00</updated>
+    <id>http://kmc653.github.io/blog/2014/12/27/the-usage-of-method-number-strip-and-slice-of-string</id>
+    <content type="html"><![CDATA[<h1>Strip</h1>
+
+<p>The method <code>strip</code> is used in a string. Returning the same content of string with leading and trailing whitespace removed.</p>
+
+<pre><code>"   Kevin   ".strip     #=&gt; "Kevin"
+</code></pre>
+
+<p>The string will be changed if we use <code>strip!</code>. Return <code>nil</code> means the string was not altered.</p>
+
+<pre><code>"Kevin".strip!     #=&gt; nil
+</code></pre>
+
+<h1>Slice</h1>
+
+<p>The method <code>slice</code> is used in a string. Returning <em>nil</em> if the <em>index</em> you choose is outside of the string or the <em>length</em> is negative.</p>
+
+<p><strong>slice( index ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice(3)        #=&gt; "i"
+</code></pre>
+
+<p><strong>slice( start, length ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice(3, 2)     #=&gt; "in"  
+</code></pre>
+
+<p><strong>slice( range ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice(1..3)     #=&gt; "evi"  
+</code></pre>
+
+<p><strong>slice( regexp ) => str or nil</strong><br/>
+<strong>slice( regexp, capture ) => str or nil</strong><br/>
+<strong>slice( match_str ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice("v")      #=&gt; "v"
+</code></pre>
+
+<h1>Split</h1>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[The Usage of Collect &amp; Map Methods]]></title>

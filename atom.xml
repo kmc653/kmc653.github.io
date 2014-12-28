@@ -4,7 +4,7 @@
   <title><![CDATA[Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2014-12-28T14:24:18+08:00</updated>
+  <updated>2014-12-28T17:59:02+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -49,14 +49,28 @@
 <pre><code>"kevin".slice(1..3)     #=&gt; "evi"  
 </code></pre>
 
-<p><strong>slice( regexp ) => str or nil</strong><br/>
-<strong>slice( regexp, capture ) => str or nil</strong><br/>
-<strong>slice( match_str ) => str or nil</strong></p>
+<p><strong>slice( match_str ) => str or nil</strong></p>
 
 <pre><code>"kevin".slice("v")      #=&gt; "v"
 </code></pre>
 
 <h1>Split</h1>
+
+<p><code>split</code> will divide string into substrings according to the delimiter. Returning an array of these substrings.<br/>
+<strong>split( pattern=$;, [limit] ) => anArray</strong></p>
+
+<pre><code>" Mr. Anderson".split          #=&gt; ["Mr.", "Anderson"]
+" Mr. Anderson".split(/ /)     #=&gt; ["", "Mr.", "Anderson"]
+" Mr. Anderson".split(//)      #=&gt; [" ", "M", "r", ".", " ", "A", "n", "d", "e", "r", "s", "o", "n"]
+" Mr. Anderson".split(//, 3)   #=&gt; [" ", "M", "r. Anderson"]
+" Mr. Anderson".split(%r{\s})  #=&gt; ["", "Mr.", "Anderson"]
+"Hello Miller".split('ll')     #=&gt; ["He", "o Mi", "er"]
+</code></pre>
+
+<p>When th e string is empty, an empty array is returned.</p>
+
+<pre><code>"".split(',', 3)               #=&gt; []
+</code></pre>
 ]]></content>
   </entry>
   

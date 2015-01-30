@@ -7,7 +7,7 @@
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="Strip The method strip is used in a string. Returning the same content of string with leading and trailing whitespace removed. " Kevin ".strip #=&gt &hellip;">
+	<meta name="description" content="Different models in Rails application would have the code that have the same logic or functionality. Using concerns to put these same code in a &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -79,6 +79,47 @@
     <article class="post">
 	<h2 class="title">
 		
+		<a href="/blog/2015/01/29/use-concerns-to-dry-up-model/">
+		
+			Use Concerns to DRY Up Model</a>
+	</h2>
+	<div class="entry-content">
+		<p>Different models in Rails application would have the code that have the same logic or functionality. Using <code>concerns</code> to put these same code in a module, which would allow you to use in any models.</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-29T19:20:35+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/on/'>on</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+
+
+</div>
+	
+</div>
+</article>
+
+
+    <article class="post">
+	<h2 class="title">
+		
 		<a href="/blog/2014/12/27/the-usage-of-method-number-strip-and-slice-of-string/">
 		
 			The Usage of Strip, Slice and Split Methods of String</a>
@@ -98,44 +139,19 @@
 
 <h1>Slice</h1>
 
-<p>The method <code>slice</code> is used in a string. Returning <em>nil</em> if the <em>index</em> you choose is outside of the string or the <em>length</em> is negative.</p>
+<p>The method <code>slice</code> is used in a string.<br/>
+* <em>slice( index ) => str or nil</em><br/>
+* <em>slice( start, length ) => str or nil</em><br/>
+* <em>slice( range ) => str or nil</em><br/>
+* <em>slice( regexp ) => str or nil</em><br/>
+* <em>slice( regexp, capture ) => str or nil</em><br/>
+* <em>slice( match_str ) => str or nil</em></p>
 
-<p><strong>slice( index ) => str or nil</strong></p>
-
-<pre><code>"kevin".slice(3)        #=&gt; "i"
-</code></pre>
-
-<p><strong>slice( start, length ) => str or nil</strong></p>
-
-<pre><code>"kevin".slice(3, 2)     #=&gt; "in"  
-</code></pre>
-
-<p><strong>slice( range ) => str or nil</strong></p>
-
-<pre><code>"kevin".slice(1..3)     #=&gt; "evi"  
-</code></pre>
-
-<p><strong>slice( match_str ) => str or nil</strong></p>
-
-<pre><code>"kevin".slice("v")      #=&gt; "v"
-</code></pre>
-
-<h1>Split</h1>
-
-<p><code>split</code> will divide string into substrings according to the delimiter. Returning an array of these substrings.<br/>
-<strong>split( pattern=$;, [limit] ) => anArray</strong></p>
-
-<pre><code>" Mr. Anderson".split          #=&gt; ["Mr.", "Anderson"]
-" Mr. Anderson".split(/ /)     #=&gt; ["", "Mr.", "Anderson"]
-" Mr. Anderson".split(//)      #=&gt; [" ", "M", "r", ".", " ", "A", "n", "d", "e", "r", "s", "o", "n"]
-" Mr. Anderson".split(//, 3)   #=&gt; [" ", "M", "r. Anderson"]
-" Mr. Anderson".split(%r{\s})  #=&gt; ["", "Mr.", "Anderson"]
-"Hello Miller".split('ll')     #=&gt; ["He", "o Mi", "er"]
-</code></pre>
-
-<p>When th e string is empty, an empty array is returned.</p>
-
-<pre><code>"".split(',', 3)               #=&gt; []
+<pre><code>"kevin".slice(3)     #=&gt; "i"  
+"kevin".slice(3, 2)     #=&gt; "in"  
+"kevin".slice(1..3)     #=&gt; "evi"  
+"kevinaeiou".slice(/[aeiou][0...9]/)
+"kevin".slice("v")     #=&gt; "v"
 </code></pre>
 
 		
@@ -349,7 +365,7 @@ a     #=&gt; ["a", "b", "c"]
     <div class="center"><a href="/blog/archives">Blog Archives</a></div>
 </nav>
 </div>
-	<footer id="footer" class="inner">Copyright &copy; 2014
+	<footer id="footer" class="inner">Copyright &copy; 2015
 
     Kai-Min Change
 

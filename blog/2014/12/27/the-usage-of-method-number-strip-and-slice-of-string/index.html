@@ -1,0 +1,192 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>The Usage of strip, slice and split Methods of String - Mr. Anderson</title>
+	<meta name="author" content="Kai-Min Change">
+
+	
+	<meta name="description" content="Strip The method strip is used in a string. Returning the same content of string with leading and trailing whitespace removed. " Kevin ".strip #=&gt &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Mr. Anderson" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script async="true" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Mr. Anderson</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="https://www.google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:kmc653.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="https://www.google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:kmc653.github.io">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">The Usage of Strip, Slice and Split Methods of String</h2>
+	<div class="entry-content"><h1>Strip</h1>
+
+<p>The method <code>strip</code> is used in a string. Returning the same content of string with leading and trailing whitespace removed.</p>
+
+<pre><code>"   Kevin   ".strip     #=&gt; "Kevin"
+</code></pre>
+
+<p>The string will be changed if we use <code>strip!</code>. Return <code>nil</code> means the string was not altered.</p>
+
+<pre><code>"Kevin".strip!     #=&gt; nil
+</code></pre>
+
+<h1>Slice</h1>
+
+<p>The method <code>slice</code> is used in a string. Returning <em>nil</em> if the <em>index</em> you choose is outside of the string or the <em>length</em> is negative.</p>
+
+<p><strong>slice( index ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice(3)        #=&gt; "i"
+</code></pre>
+
+<p><strong>slice( start, length ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice(3, 2)     #=&gt; "in"  
+</code></pre>
+
+<p><strong>slice( range ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice(1..3)     #=&gt; "evi"  
+</code></pre>
+
+<p><strong>slice( match_str ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice("v")      #=&gt; "v"
+</code></pre>
+
+<h1>Split</h1>
+
+<p><code>split</code> will divide string into substrings according to the delimiter. Returning an array of these substrings.<br/>
+<strong>split( pattern=$;, [limit] ) => anArray</strong></p>
+
+<pre><code>" Mr. Anderson".split          #=&gt; ["Mr.", "Anderson"]
+" Mr. Anderson".split(/ /)     #=&gt; ["", "Mr.", "Anderson"]
+" Mr. Anderson".split(//)      #=&gt; [" ", "M", "r", ".", " ", "A", "n", "d", "e", "r", "s", "o", "n"]
+" Mr. Anderson".split(//, 3)   #=&gt; [" ", "M", "r. Anderson"]
+" Mr. Anderson".split(%r{\s})  #=&gt; ["", "Mr.", "Anderson"]
+"Hello Miller".split('ll')     #=&gt; ["He", "o Mi", "er"]
+</code></pre>
+
+<p>When th e string is empty, an empty array is returned.</p>
+
+<pre><code>"".split(',', 3)               #=&gt; []
+</code></pre>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-27T19:49:30+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby/'>ruby</a>
+
+
+</div>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		<a class="addthis_button_tweet"></a>
+		
+		
+		
+	</div>
+	
+</div>
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2014
+
+    Kai-Min Change
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>

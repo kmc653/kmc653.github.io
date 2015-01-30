@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ruby | Mr. Anderson]]></title>
+  <link href="http://kmc653.github.io/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://kmc653.github.io/"/>
+  <updated>2014-12-28T17:59:02+08:00</updated>
+  <id>http://kmc653.github.io/</id>
+  <author>
+    <name><![CDATA[Kai-Min Change]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[The Usage of strip, slice and split Methods of String]]></title>
+    <link href="http://kmc653.github.io/blog/2014/12/27/the-usage-of-method-number-strip-and-slice-of-string/"/>
+    <updated>2014-12-27T19:49:30+08:00</updated>
+    <id>http://kmc653.github.io/blog/2014/12/27/the-usage-of-method-number-strip-and-slice-of-string</id>
+    <content type="html"><![CDATA[<h1>Strip</h1>
+
+<p>The method <code>strip</code> is used in a string. Returning the same content of string with leading and trailing whitespace removed.</p>
+
+<pre><code>"   Kevin   ".strip     #=&gt; "Kevin"
+</code></pre>
+
+<p>The string will be changed if we use <code>strip!</code>. Return <code>nil</code> means the string was not altered.</p>
+
+<pre><code>"Kevin".strip!     #=&gt; nil
+</code></pre>
+
+<h1>Slice</h1>
+
+<p>The method <code>slice</code> is used in a string. Returning <em>nil</em> if the <em>index</em> you choose is outside of the string or the <em>length</em> is negative.</p>
+
+<p><strong>slice( index ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice(3)        #=&gt; "i"
+</code></pre>
+
+<p><strong>slice( start, length ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice(3, 2)     #=&gt; "in"  
+</code></pre>
+
+<p><strong>slice( range ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice(1..3)     #=&gt; "evi"  
+</code></pre>
+
+<p><strong>slice( match_str ) => str or nil</strong></p>
+
+<pre><code>"kevin".slice("v")      #=&gt; "v"
+</code></pre>
+
+<h1>Split</h1>
+
+<p><code>split</code> will divide string into substrings according to the delimiter. Returning an array of these substrings.<br/>
+<strong>split( pattern=$;, [limit] ) => anArray</strong></p>
+
+<pre><code>" Mr. Anderson".split          #=&gt; ["Mr.", "Anderson"]
+" Mr. Anderson".split(/ /)     #=&gt; ["", "Mr.", "Anderson"]
+" Mr. Anderson".split(//)      #=&gt; [" ", "M", "r", ".", " ", "A", "n", "d", "e", "r", "s", "o", "n"]
+" Mr. Anderson".split(//, 3)   #=&gt; [" ", "M", "r. Anderson"]
+" Mr. Anderson".split(%r{\s})  #=&gt; ["", "Mr.", "Anderson"]
+"Hello Miller".split('ll')     #=&gt; ["He", "o Mi", "er"]
+</code></pre>
+
+<p>When th e string is empty, an empty array is returned.</p>
+
+<pre><code>"".split(',', 3)               #=&gt; []
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[The Usage of Collect &amp; Map Methods]]></title>
+    <link href="http://kmc653.github.io/blog/2014/12/21/the-usage-of-collect-and-map-methods/"/>
+    <updated>2014-12-21T22:57:15+08:00</updated>
+    <id>http://kmc653.github.io/blog/2014/12/21/the-usage-of-collect-and-map-methods</id>
+    <content type="html"><![CDATA[<h1>Collect</h1>
+
+<ul>
+<li><em>collect { | item | block } => array</em></li>
+<li><em>collect => Enumerator</em></li>
+</ul>
+
+
+<p>The method <code>collect</code> is used in an array. Returns a new array with the results of executing block once for each element in array.<br/>
+If no block is given, an enummerator is returned instead.</p>
+
+<pre><code>['a', 'b', 'c'].collect{ |letter| letter.capitalize }     #=&gt; ["A", "B", "C"]
+</code></pre>
+
+<p>There is a concise way doing the same work:</p>
+
+<pre><code>['a', 'b', 'c'].collect(&amp;:capitalize)     #=&gt; ["A", "B", "C"]
+</code></pre>
+
+<p>The element will be replaced with the value returned by block if adding a <code>!</code></p>
+
+<pre><code>a = ['a', 'b', 'c'].collect!(&amp;:capitalize)
+a     #=&gt; ["A", "B", "C"]
+</code></pre>
+
+<h1>Map</h1>
+
+<ul>
+<li><em>map { | item | block } => array</em></li>
+<li><em>map => Enumerator</em></li>
+</ul>
+
+
+<p>The method <code>map</code> is also used in an array.</p>
+
+<pre><code>a = ['a', 'b', 'c']
+a.map { |x| x + x }     #=&gt; ["aa", "bb", "cc"]
+</code></pre>
+
+<p>There is also a shorthand way:</p>
+
+<pre><code>['a', 'b', 'c'].map(&amp;:capitalize)     #=&gt; ["A", "B", "C"]
+</code></pre>
+
+<p>The element will be replaced with the value returned by block if adding a <code>!</code></p>
+
+<pre><code>a = ['A', 'B', 'C']
+a.map!(&amp;:downcase)
+a     #=&gt; ["a", "b", "c"]
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

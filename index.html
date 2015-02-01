@@ -7,7 +7,7 @@
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="Strip The method strip is used in a string. Returning the same content of string with leading and trailing whitespace removed. " Kevin ".strip #=&gt &hellip;">
+	<meta name="description" content="In Rails application, we usually send emails to notify users of something. Sending emails would not be fast because it need to rely on third party &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -74,6 +74,203 @@
 		
 	
 	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2015/01/31/use-sidekiq-to-send-emails-from-background-jobs/">
+		
+			Use Sidekiq to Send Emails From Background Jobs</a>
+	</h2>
+	<div class="entry-content">
+		<p>In Rails application, we usually send emails to notify users of something. Sending emails would not be fast because it need to rely on third party service ( e.q., Google, Yahoo, Mailgun ). We can put sending action in background process to make sure that application won&rsquo;t be held up.</p>
+
+<h1>Sidekiq</h1>
+
+<p>We can use sidekiq to make the jobs running in the background. It will avoid our app getting stuck if one of the processes broke.</p>
+
+<p>At first, add gem <code>sidekiq</code> in <code>Gemfile</code>, and then run <code>bundle install</code> from command line</p>
+
+<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;sidekiq&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For instance, if we want to send an invitation email to user, the code should be</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using <code>sidekiq</code>, we add <code>delay</code> to make sending action processing in background.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">AppMailer</span><span class="o">.</span><span class="n">delay</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We have to install <code>redis</code> server if we would like to set up background job processing locally. we can get Redis from here: <a href="http://redis.io/download">http://redis.io/download</a> .</p>
+
+<p>Typing <code>redis-server</code> to run redis, and then type <code>bundle exec sidekiq</code> to execute sidekiq, and then run Rails applicaion server to send emails.</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-31T15:41:25+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby-on-rails/'>ruby on rails</a>
+
+
+</div>
+	
+</div>
+</article>
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2015/01/29/use-concerns-to-dry-up-model/">
+		
+			Use Concerns to DRY Up Model</a>
+	</h2>
+	<div class="entry-content">
+		<p>Different models in Rails application would have the code that have the same logic or functionality. Using <code>concerns</code> to put these same code in a module, which allow you to use in any models without repeating code.</p>
+
+<h1>Set the path of module</h1>
+
+<p>At first, we should add a line of code in <code>config/application.rb</code> to tell our app where to load the module file.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">autoload_paths</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">/lib&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Put the same functional code in module</h1>
+
+<p>For instance, there is a invitation model which would generate token before creating a invitation.</p>
+
+<figure class='code'><figcaption><span>invitation.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Invitation</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">before_create</span> <span class="ss">:generate_token</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:inviter</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">validates_presence_of</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">generate_token</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We&rsquo;re able to put <code>before_create</code> and <code>generate_token</code> method in a module named <code>Tokenable</code>.</p>
+
+<figure class='code'><figcaption><span>tokenable.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Tokenable</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">before_create</span> <span class="ss">:generate_token</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">generate_token</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Afterward, we add <code>include</code> following the name of module in invitation model.</p>
+
+<figure class='code'><figcaption><span>invitation.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Invitation</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Tokenable</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:inviter</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">validates_presence_of</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Therefore, there is no need to have redundant code to acquire the same functionality.</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-29T19:20:35+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby-on-rails/'>ruby on rails</a>
+
+
+</div>
+	
+</div>
+</article>
 
 
     <article class="post">
@@ -324,7 +521,7 @@ a     #=&gt; ["a", "b", "c"]
     <div class="center"><a href="/blog/archives">Blog Archives</a></div>
 </nav>
 </div>
-	<footer id="footer" class="inner">Copyright &copy; 2014
+	<footer id="footer" class="inner">Copyright &copy; 2015
 
     Kai-Min Change
 

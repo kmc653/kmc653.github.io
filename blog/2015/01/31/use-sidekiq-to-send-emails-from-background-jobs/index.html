@@ -1,0 +1,169 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Use Sidekiq to Send Emails from Background Jobs - Mr. Anderson</title>
+	<meta name="author" content="Kai-Min Change">
+
+	
+	<meta name="description" content="In Rails application, we usually send emails to notify users of something. Sending emails would not be fast because it need to rely on third party &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Mr. Anderson" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script async="true" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Mr. Anderson</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="https://www.google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:kmc653.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="https://www.google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:kmc653.github.io">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">Use Sidekiq to Send Emails From Background Jobs</h2>
+	<div class="entry-content"><p>In Rails application, we usually send emails to notify users of something. Sending emails would not be fast because it need to rely on third party service ( e.q., Google, Yahoo, Mailgun ). We can put sending action in background process to make sure that application won&rsquo;t be held up.</p>
+
+<h1>Sidekiq</h1>
+
+<p>We can use sidekiq to make the jobs running in the background. It will avoid our app getting stuck if one of the processes broke.</p>
+
+<p>At first, add gem <code>sidekiq</code> in <code>Gemfile</code>, and then run <code>bundle install</code> from command line</p>
+
+<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;sidekiq&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For instance, if we want to send an invitation email to user, the code should be</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using <code>sidekiq</code>, we add <code>delay</code> to make sending action processing in background.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">AppMailer</span><span class="o">.</span><span class="n">delay</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We have to install <code>redis</code> server if we would like to set up background job processing locally. we can get Redis from here: <a href="http://redis.io/download">http://redis.io/download</a> .</p>
+
+<p>Typing <code>redis-server</code> to run redis, and then type <code>bundle exec sidekiq</code> to execute sidekiq, and then run Rails applicaion server to send emails.</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-31T15:41:25+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby-on-rails/'>ruby on rails</a>
+
+
+</div>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		<a class="addthis_button_tweet"></a>
+		
+		
+		
+	</div>
+	
+</div>
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2015
+
+    Kai-Min Change
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>

@@ -25,5 +25,4 @@ AppMailer.delay.send_invitation_email(@invitation)
 
 We have to install `redis` server if we would like to set up background job processing locally. we can get Redis from here: http://redis.io/download . 
 
-Typing `redis-server` to run redis, and then type `bundle exec sidekiq` to execute sidekiq, and then run Rails applicaion server to send emails.
-
+Typing `redis-server` to run redis, and then type `bundle exec sidekiq` on application to execute sidekiq, and then run Rails applicaion server to send emails.

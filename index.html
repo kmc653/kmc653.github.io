@@ -7,7 +7,7 @@
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="In Rails application, we usually send emails to notify users of something. Sending emails would not be fast because it need to rely on third party &hellip;">
+	<meta name="description" content="Procfile Procfile is a text file, placed in the root of the Rails application, used to declare what commands are run by dynos of the application on &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -79,6 +79,84 @@
     <article class="post">
 	<h2 class="title">
 		
+		<a href="/blog/2015/02/01/procfile-and-foreman/">
+		
+			Procfile and Foreman</a>
+	</h2>
+	<div class="entry-content">
+		<h1>Procfile</h1>
+
+<p><code>Procfile</code> is a text file, placed in the root of the Rails application, used to declare what commands are run by dynos of the application on the Heroku. We can use Procfile to declare different kind of process type. Each process type is a declaration of command that is executed when a dyno of that process type is started.</p>
+
+<p>The following code is the format of process type, one process per line.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&lt;</span><span class="n">process</span> <span class="n">type</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For example,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">web</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">unicorn</span> <span class="o">-</span><span class="nb">p</span> <span class="vg">$PORT</span> <span class="o">-</span><span class="n">c</span> <span class="o">.</span><span class="n">/config</span><span class="o">/</span><span class="n">unicorn</span><span class="o">.</span><span class="n">rb</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Foreman</h1>
+
+<p>When we develope and debug an applicaion, the local developement environment is as similar as remote environments will avoid us from expending extra time to fix errors. <code>Foreman</code> is a command-line tool for running <code>Procfile</code> to execute application, which would make local emvironment works like remote&rsquo;s.</p>
+
+<p>Type <code>foreman start</code> in command-line to execute <code>Foreman</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">foreman</span> <span class="n">start</span>
+</span><span class='line'><span class="mi">21</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">35</span> <span class="n">web</span><span class="o">.</span><span class="mi">1</span>  <span class="o">|</span> <span class="n">started</span> <span class="n">with</span> <span class="n">pid</span> <span class="mi">25658</span>
+</span><span class='line'><span class="mi">21</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">36</span> <span class="n">web</span><span class="o">.</span><span class="mi">1</span>  <span class="o">|</span> <span class="n">I</span><span class="p">,</span> <span class="o">[</span><span class="mi">2015</span><span class="o">-</span><span class="mo">02</span><span class="o">-</span><span class="mo">01</span><span class="ss">T21</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">36</span><span class="o">.</span><span class="mo">01430</span><span class="mi">8</span> <span class="c1">#25658]  INFO -- : Refreshing Gem list</span>
+</span><span class='line'><span class="mi">21</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">38</span> <span class="n">web</span><span class="o">.</span><span class="mi">1</span>  <span class="o">|</span> <span class="n">I</span><span class="p">,</span> <span class="o">[</span><span class="mi">2015</span><span class="o">-</span><span class="mo">02</span><span class="o">-</span><span class="mo">01</span><span class="ss">T21</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">38</span><span class="o">.</span><span class="mi">087552</span> <span class="c1">#25658]  INFO -- : listening on addr=0.0.0.0:5000 fd=10</span>
+</span><span class='line'><span class="mi">21</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">38</span> <span class="n">web</span><span class="o">.</span><span class="mi">1</span>  <span class="o">|</span> <span class="n">I</span><span class="p">,</span> <span class="o">[</span><span class="mi">2015</span><span class="o">-</span><span class="mo">02</span><span class="o">-</span><span class="mo">01</span><span class="ss">T21</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">38</span><span class="o">.</span><span class="mi">256511</span> <span class="c1">#25658]  INFO -- : master process ready</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can see the application running on the <a href="http://localhost:5000">http://localhost:5000</a></p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-01T17:39:07+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/heroku/'>heroku</a>, <a class='category' href='/blog/categories/on/'>on</a>, <a class='category' href='/blog/categories/rails/'>rails,</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+
+
+</div>
+	
+</div>
+</article>
+
+
+    <article class="post">
+	<h2 class="title">
+		
 		<a href="/blog/2015/01/31/use-sidekiq-to-send-emails-from-background-jobs/">
 		
 			Use Sidekiq to Send Emails From Background Jobs</a>
@@ -113,7 +191,7 @@
 
 <p>We have to install <code>redis</code> server if we would like to set up background job processing locally. we can get Redis from here: <a href="http://redis.io/download">http://redis.io/download</a> .</p>
 
-<p>Typing <code>redis-server</code> to run redis, and then type <code>bundle exec sidekiq</code> to execute sidekiq, and then run Rails applicaion server to send emails.</p>
+<p>Typing <code>redis-server</code> to run redis, and then type <code>bundle exec sidekiq</code> on application to execute sidekiq, and then run Rails applicaion server to send emails.</p>
 
 		
 		

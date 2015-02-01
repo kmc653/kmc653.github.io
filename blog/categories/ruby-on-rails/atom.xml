@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby on rails | Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/blog/categories/ruby-on-rails/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-02-01T16:30:46+08:00</updated>
+  <updated>2015-02-01T21:29:17+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -40,7 +40,7 @@ AppMailer.delay.send_invitation_email(@invitation)
 
 <p>We have to install <code>redis</code> server if we would like to set up background job processing locally. we can get Redis from here: <a href="http://redis.io/download">http://redis.io/download</a> .</p>
 
-<p>Typing <code>redis-server</code> to run redis, and then type <code>bundle exec sidekiq</code> to execute sidekiq, and then run Rails applicaion server to send emails.</p>
+<p>Typing <code>redis-server</code> to run redis, and then type <code>bundle exec sidekiq</code> on application to execute sidekiq, and then run Rails applicaion server to send emails.</p>
 ]]></content>
   </entry>
   

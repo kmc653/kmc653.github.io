@@ -3,7 +3,7 @@ layout: post
 title: "Procfile and Foreman"
 date: 2015-02-01 17:39:07 +0800
 comments: true
-categories: ruby on rails, heroku 
+category: ruby on rails, heroku 
 ---
 #Procfile
 `Procfile` is a text file, placed in the root of the Rails application, used to declare what commands are run by dynos of the application on the Heroku. We can use Procfile to declare different kind of process type. Each process type is a declaration of command that is executed when a dyno of that process type is started.

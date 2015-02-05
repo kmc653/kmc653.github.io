@@ -4,7 +4,7 @@
   <title><![CDATA[Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-02-01T21:29:17+08:00</updated>
+  <updated>2015-02-05T11:09:45+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Use unicorn as production server to implement concurrent requests]]></title>
+    <link href="http://kmc653.github.io/blog/2015/02/05/use-unicorn-as-production-server/"/>
+    <updated>2015-02-05T10:33:14+08:00</updated>
+    <id>http://kmc653.github.io/blog/2015/02/05/use-unicorn-as-production-server</id>
+    <content type="html"><![CDATA[<p>It&rsquo;ll be much efficient use of dyno if a web application that process requests concurrently, instead of process one request at a time. Therefore, we should implement concurrent requests in developing and running production services.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Procfile and Foreman]]></title>

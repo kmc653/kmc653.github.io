@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby on rails, heroku | Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/blog/categories/ruby-on-rails-heroku/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-02-05T11:09:45+08:00</updated>
+  <updated>2015-02-06T15:52:16+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -18,7 +18,162 @@
     <link href="http://kmc653.github.io/blog/2015/02/05/use-unicorn-as-production-server/"/>
     <updated>2015-02-05T10:33:14+08:00</updated>
     <id>http://kmc653.github.io/blog/2015/02/05/use-unicorn-as-production-server</id>
-    <content type="html"><![CDATA[<p>It&rsquo;ll be much efficient use of dyno if a web application that process requests concurrently, instead of process one request at a time. Therefore, we should implement concurrent requests in developing and running production services.</p>
+    <content type="html"><![CDATA[<p>It&rsquo;ll be much efficient use of dyno if a web application that process requests concurrently, instead of process one request at a time. Therefore, we should implement concurrent requests in developing and running production services. Using <a href="https://devcenter.heroku.com/articles/rails-unicorn">Unicorn</a> as web server let Rails applications run concurrently by running multiple Ruby processes in a single dyno.</p>
+
+<h1>Install unicorn &amp; sidekiq gems</h1>
+
+<p>At first, add <code>unicorn</code> and <code>sidekiq</code>in Gemfile, and then run <code>bundle install</code>.
+<code>ruby Gemfile
+gem 'sidekiq'
+gem 'unicorn'
+</code></p>
+
+<h1>Apply <code>Redis To Go</code> on Heroku</h1>
+
+<p>We should apply free <a href="https://addons.heroku.com/redistogo">Redis To Go</a> service on heroku to work with sidekiq to make jobs running in the background.</p>
+
+<h1>Create a unicorn.rb file</h1>
+
+<p>Add a <code>unicorn.rb</code> file in <code>config</code>:
+<figure class='code'><figcaption><span>unicorn.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">worker_processes</span> <span class="nb">Integer</span><span class="p">(</span><span class="no">ENV</span><span class="o">[&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">WEB_CONCURRENCY</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="n">timeout</span> <span class="mi">15</span>
+</span><span class='line'><span class="n">preload_app</span> <span class="kp">true</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;before_fork do |server, worker|</span>
+</span><span class='line'><span class="sr">  Signal.trap &amp;lsquo;TERM&amp;rsquo; do</span>
+</span><span class='line'><span class="sr">    puts &amp;lsquo;Unicorn master intercepting TERM and sending myself QUIT instead&amp;rsquo;</span>
+</span><span class='line'><span class="sr">    Process.kill &amp;lsquo;QUIT&amp;rsquo;, Process.pid</span>
+</span><span class='line'><span class="sr">  end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="n">defined?</span><span class="p">(</span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">)</span> <span class="ow">and</span>
+</span><span class='line'>    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">disconnect!</span>
+</span><span class='line'><span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;after_fork do |server, worker|</span>
+</span><span class='line'><span class="sr">  Sidekiq.configure_client do |config|</span>
+</span><span class='line'><span class="sr">    config.redis = { :size =&gt; 1 }</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">  Sidekiq.configure_server do |config|</span>
+</span><span class='line'><span class="sr">    config.redis = { :size =&gt; 5 }</span>
+</span><span class='line'><span class="sr">  end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="no">Signal</span><span class="o">.</span><span class="n">trap</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="no">TERM</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="no">Unicorn</span> <span class="n">worker</span> <span class="n">intercepting</span> <span class="no">TERM</span> <span class="ow">and</span> <span class="n">doing</span> <span class="n">nothing</span><span class="o">.</span> <span class="no">Wait</span> <span class="k">for</span> <span class="n">master</span> <span class="n">to</span> <span class="nb">send</span> <span class="no">QUIT</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  defined?(ActiveRecord::Base) and</span>
+</span><span class='line'><span class="sr">    ActiveRecord::Base.establish_connection</span>
+</span><span class='line'><span class="sr">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>And then, add two lines of command in <code>Procfile</code>:
+<code>ruby Procfile
+web: bundle exec unicorn -p $PORT -c ./config/unicorn.rb
+worker: bundle exec sidekiq -e production -C
+</code></p>
+
+<p>Carefully, in above setting, there are two dynos, one of them is web dyno, another one is worker dyno. However, in heroku, we have to swipe the credit card if we use more than one dyno.</p>
+
+<p>Therefore, if we just want to have a taste and don&rsquo;t want to pay money, add a line of code in <code>unicorn.rb</code>:
+<figure class='code'><figcaption><span>unicorn.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">worker_processes</span> <span class="nb">Integer</span><span class="p">(</span><span class="no">ENV</span><span class="o">[&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">WEB_CONCURRENCY</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="n">timeout</span> <span class="mi">15</span>
+</span><span class='line'><span class="n">preload_app</span> <span class="kp">true</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;before_fork do |server, worker|</span>
+</span><span class='line'><span class="sr">  @sidekiq_pid ||= spawn(&amp;ldquo;bundle exec sidekiq -c 2&amp;rdquo;)  # &amp;lt;== this line</span>
+</span><span class='line'><span class="sr">  Signal.trap &amp;lsquo;TERM&amp;rsquo; do</span>
+</span><span class='line'><span class="sr">    puts &amp;lsquo;Unicorn master intercepting TERM and sending myself QUIT instead&amp;rsquo;</span>
+</span><span class='line'><span class="sr">    Process.kill &amp;lsquo;QUIT&amp;rsquo;, Process.pid</span>
+</span><span class='line'><span class="sr">  end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="n">defined?</span><span class="p">(</span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">)</span> <span class="ow">and</span>
+</span><span class='line'>    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">disconnect!</span>
+</span><span class='line'><span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;after_fork do |server, worker|</span>
+</span><span class='line'><span class="sr">  Sidekiq.configure_client do |config|</span>
+</span><span class='line'><span class="sr">    config.redis = { :size =&gt; 1 }</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">  Sidekiq.configure_server do |config|</span>
+</span><span class='line'><span class="sr">    config.redis = { :size =&gt; 5 }</span>
+</span><span class='line'><span class="sr">  end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="no">Signal</span><span class="o">.</span><span class="n">trap</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="no">TERM</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="no">Unicorn</span> <span class="n">worker</span> <span class="n">intercepting</span> <span class="no">TERM</span> <span class="ow">and</span> <span class="n">doing</span> <span class="n">nothing</span><span class="o">.</span> <span class="no">Wait</span> <span class="k">for</span> <span class="n">master</span> <span class="n">to</span> <span class="nb">send</span> <span class="no">QUIT</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  defined?(ActiveRecord::Base) and</span>
+</span><span class='line'><span class="sr">    ActiveRecord::Base.establish_connection</span>
+</span><span class='line'><span class="sr">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>This line of code means sidekiq workers will be spawned from unicorn within web dyno.</p>
+
+<p>And the <code>Procfile</code> should only be:
+<code>ruby Procfile
+web: bundle exec unicorn -p $PORT -c ./config/unicorn.rb
+</code></p>
+
+<p>However, building a real production Rails application, we&rsquo;re not according to the above steps, these just give you a try without pulling out the credit card.</p>
 ]]></content>
   </entry>
   

@@ -1,0 +1,22 @@
+---
+layout: post
+title: "set up a staging server on heroku"
+date: 2015-02-07 21:37:37 +0800
+comments: true
+category: ruby on rails, heroku 
+---
+When developing an application, we always meet a situation is that new features work well in local machine, but break in production server. Hence, it will be better if we can test out new features in a "production like" environment. The solution is to create a staging server that is similar to production server. We are able to test new functions of the application on staging environment, and then deploy to production environment if everything works well. In the following, I'll introduce how to set up a staging server on heroku when already having a production one.
+
+First of all, in convention, the staging server will be named to have `staging` word. For example, if the application on heroku named `wordsfarm`, the staging server can be named `staging-wordsfarm`.
+```
+$ heroku fork -a wordsfarm staging-wordsfarm
+```
+This `fork` command does a lot of things. It copies the config vars, data in Postgres and re-provision all add-ons on heroku. 
+
+And then, we should add a new remote by using `git remote add` command:
+```
+$ git remote add staging-wordsfarm git@heroku.com:staging-wordsfarm.git
+```
+We can use `git remote -v` command to show all remote connections with URL.
+
+After doing these, we can see there is a new application on heroku named `staging-wordsfarm` with independent database and Add-ons. Therefore, we can test on staging server to keep changes from breaking things on production server. 

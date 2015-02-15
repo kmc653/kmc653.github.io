@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby on rails, heroku | Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/blog/categories/ruby-on-rails-heroku/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-02-07T23:09:34+08:00</updated>
+  <updated>2015-02-15T17:31:58+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,79 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[use Paratrooper gem to automate the deploy pipeline]]></title>
+    <link href="http://kmc653.github.io/blog/2015/02/15/use-paratrooper-gem-to-automate-the-deploy-pipeline/"/>
+    <updated>2015-02-15T16:03:19+08:00</updated>
+    <id>http://kmc653.github.io/blog/2015/02/15/use-paratrooper-gem-to-automate-the-deploy-pipeline</id>
+    <content type="html"><![CDATA[<h1>Paratrooper</h1>
+
+<p>Every time we deploy a rails applicaton to staging server or production server, there will be some steps we need to process ( Turn maintenance page on, git push changes to heroku, run database migrations, turn off maintenance page ). Using <code>paratrooper</code> gem  help us to simplify the process. We&rsquo;re able to deploy our application to the staging server with simply type command <code>rake deploy:staging</code>, and deploy to the production server with command <code>rake deploy:production</code>.</p>
+
+<p>At first, add <code>paratrooper</code> in Gemfile, and then run <code>bundle install</code>.
+<code>ruby Gemfile
+gem 'paratrooper'
+</code></p>
+
+<p>Add a file named <code>deploy.rake</code> and placed it in the lib/tasks directory. Here is what it looks like:
+<figure class='code'><figcaption><span>deploy.rake</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="nb">require</span> <span class="o">&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">paratrooper</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt; namespace :deploy do</span>
+</span><span class='line'><span class="sr">   desc &amp;lsquo;Deploy app in staging environment&amp;rsquo;</span>
+</span><span class='line'><span class="sr">   task :staging do</span>
+</span><span class='line'><span class="sr">     deployment = Paratrooper::Deploy.new(&amp;ldquo;amazing-staging-app&amp;rdquo;, tag: &amp;lsquo;staging&amp;rsquo;)&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">deployment</span><span class="o">.</span><span class="n">deploy</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>   <span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;   desc &amp;lsquo;Deploy app in production environment&amp;rsquo;</span>
+</span><span class='line'><span class="sr">   task :production do</span>
+</span><span class='line'><span class="sr">     deployment = Paratrooper::Deploy.new(&amp;ldquo;amazing-production-app&amp;rdquo;) do |deploy|</span>
+</span><span class='line'><span class="sr">       deploy.tag              = &amp;lsquo;production&amp;rsquo;,</span>
+</span><span class='line'><span class="sr">       deploy.match_tag        = &amp;lsquo;staging&amp;rsquo;,</span>
+</span><span class='line'><span class="sr">       deploy.maintenance_mode = !ENV[&amp;lsquo;NO_MAINTENANCE&amp;rsquo;]</span>
+</span><span class='line'><span class="sr">     end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">deployment</span><span class="o">.</span><span class="n">deploy</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>   <span class="k">end</span>
+</span><span class='line'> <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>In above, we should modify code from <code>amazing-staging-app</code> and <code>amazing-production-app</code> to our staging and production applications&#8217; name.</p>
+
+<p>It&rsquo;s also important to note that in the line 15 of <code>deploy.rake</code> file, there&rsquo;s a <code>match_tag</code> equals <code>staging</code>, which means we&rsquo;re able to deploy to production server only if the application has been pushed and tested on the staging. This insures that deploying to staging is not to be omitted.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[set up a staging server on heroku]]></title>

@@ -187,10 +187,10 @@
 	<div class="entry-content">
 		<p>When developing an application, we always meet a situation is that new features work well in local machine, but break in production server. Hence, it will be better if we can test out new features in a &ldquo;production like&rdquo; environment. The solution is to create a staging server that is similar to production server. We are able to test new functions of the application on staging environment, and then deploy to production environment if everything works well. In the following, I&rsquo;ll introduce how to set up a staging server on heroku when already having a production one.</p>
 
-<p>First of all, in convention, the staging server will be named to have <code>staging</code> word. For example, if the application on heroku named <code>wordsfarm</code>, the staging server can be named <code>staging-wordsfarm</code>.</p>
+<p>First of all, in convention, the staging server will be named to have <code>staging</code> word. For example, if the application on heroku named <code>wordsfarm</code>, the staging server can be named <code>wordsfarm-staging</code>.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku fork -a wordsfarm staging-wordsfarm</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku fork -a wordsfarm wordsfarm-staging</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This <code>fork</code> command does a lot of things. It copies the config vars, data in Postgres and re-provision all add-ons on heroku.</p>
@@ -198,12 +198,26 @@
 <p>And then, we should add a new remote by using <code>git remote add</code> command:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git remote add staging-wordsfarm git@heroku.com:staging-wordsfarm.git</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git remote add wordsfarm-staging git@heroku.com:wordsfarm-staging.git</span></code></pre></td></tr></table></div></figure>
 
 
 <p>We can use <code>git remote -v</code> command to show all remote connections with URL.</p>
 
-<p>After doing these, we can see there is a new application on heroku named <code>staging-wordsfarm</code> with independent database and Add-ons. Therefore, we can test on staging server to keep changes from breaking things on production server.</p>
+<pre><code>heroku  https://git.heroku.com/wordsfarm.git (fetch)
+heroku  https://git.heroku.com/wordsfarm.git (push)
+origin  https://github.com/kmc653/wordsfarm.git (fetch)
+origin  https://github.com/kmc653/wordsfarm.git (push)
+wordsfarm-staging git@heroku.com:wordsfarm-staging.git (fetch)
+wordsfarm-staging git@heroku.com:wordsfarm-staging.git (push)
+</code></pre>
+
+<p>After doing these, we can see there is a new application on heroku named <code>wordsfarm-staging</code> with independent database and Add-ons. Therefore, we can test on staging server to keep changes from breaking things on production server.</p>
+
+<p>If we want to deploy to the staging server, we should:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git push wordsfarm-staging master</span></code></pre></td></tr></table></div></figure>
+
 
 		
 		

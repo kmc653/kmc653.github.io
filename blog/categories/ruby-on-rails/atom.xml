@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby on rails | Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/blog/categories/ruby-on-rails/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-04-21T10:28:12+08:00</updated>
+  <updated>2015-05-01T15:41:22+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,90 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[File Uploading on Amazon S3 with Carrierwave-aws]]></title>
+    <link href="http://kmc653.github.io/blog/2015/04/30/file-uploading-on-amazon-s3-with-carrierwave-aws/"/>
+    <updated>2015-04-30T12:10:17+08:00</updated>
+    <id>http://kmc653.github.io/blog/2015/04/30/file-uploading-on-amazon-s3-with-carrierwave-aws</id>
+    <content type="html"><![CDATA[<p>Sometimes websites offer users to upload files or images. We can use Carrierwave-aws gem to upload files on Amazon S3 (Amazon simple Storage Service).</p>
+
+<p>In the following example, I would like to upload large_cover and small_cover images of the videos. At first, create a migration to add a string column to the model:
+<code>
+$ rails g migration add_large_cover_and _small_cover_to_videos
+$ rake db:migrate
+</code></p>
+
+<pre><code class="ruby 20150127011135_add_large_cover_and_small_cover_to_videos.rb">class AddLargeCoverAndSmallCoverToVideos &lt; ActiveRecord::Migration
+  def change
+    add_column :videos, :large_cover, :string
+    add_column :videos, :small_cover, :string
+  end
+end
+</code></pre>
+
+<p>And then, open the <code>video</code> model and mount the uploader:
+<code>ruby video.rb
+class Video &lt; ActiveRecord::Base
+  mount_uploader :large_cover, LargeCoverUploader
+  mount_uploader :small_cover, SmallCoverUploader
+end
+</code></p>
+
+<p>Create a <code>uploaders</code> directory in <code>app</code> directory, and put <code>large_cover_uploader.rb</code> and <code>small_cover_uploader.rb</code> files in here. In these two files, we can customize our uploader, such as the path of storage or the size of image, etc.</p>
+
+<h1>Resize the image</h1>
+
+<p>We should install <code>Imagemagick</code> and <code>MiniMagick</code> to do image resizing. MiniMagick is a Ruby interface for Imagemagick, so we should install Imagemagick first, and then install MiniMagick.</p>
+
+<p>Add <code>carrierwave-aws</code> and <code>mini_magick</code>in Gemfile, and then run <code>bundle install</code>.
+<code>ruby Gemfile
+gem 'carrierwave-aws'
+gem 'mini_magick'
+</code></p>
+
+<p>Customize the image size in the <code>large_cover_uploader</code> and <code>small_cover_uploader</code> files:</p>
+
+<pre><code class="ruby large_cover_uploader.rb">class LargeCoverUploader &lt; CarrierWave::Uploader::Base
+  include CarrierWave::MiniMagick
+
+  process :resize_to_fill =&gt; [655, 375]
+end
+</code></pre>
+
+<pre><code class="ruby small_cover_uploader.rb">class SmallCoverUploader &lt; CarrierWave::Uploader::Base
+  include CarrierWave::MiniMagick
+
+  process :resize_to_fill =&gt; [166, 236]
+end
+</code></pre>
+
+<h1>Configure Amazon web service</h1>
+
+<p>Before trying to use Amazon web service, we should apply an <a href="http://aws.amazon.com/">AWS</a> account first. After having an account, we should create a new user and get <code>Access Key</code> and <code>Secret Access Key</code> of this user. And then creating a <code>Bucket</code> for the web app. There&rsquo;s a blog we can follow: <a href="http://blog.danielle.tuckerlabs.com/post/60491757671/creating-a-simple-aws-s3-bucket-with-iam-access#_=_">http://blog.danielle.tuckerlabs.com/post/60491757671/creating-a-simple-aws-s3-bucket-with-iam-access#_=_</a> .</p>
+
+<p>After creating a bucket, we should add a file called <code>carrierwave.rb</code>  in <code>/config/initializers</code>:
+<code>ruby carrierwave.rb
+CarrierWave.configure do |config|
+  if Rails.env.staging? || Rails.env.production?
+    config.storage    = :aws
+    config.aws_acl    = :public_read
+    config.aws_credentials = {
+      access_key_id:      ENV.fetch('AWS_ACCESS_KEY_ID'),
+      secret_access_key:  ENV.fetch('AWS_SECRET_ACCESS_KEY')
+    }
+    config.aws_bucket = ENV.fetch('S3_BUCKET_NAME')
+  else
+    config.storage = :file
+    config.enable_processing = Rails.env.development?
+  end
+end
+end
+</code></p>
+
+<p>I use <a href="https://github.com/laserlemon/figaro">Figaro</a> to configure environment variables which are set in the <code>application.yml</code> file.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Use Sidekiq to Send Emails from Background Jobs]]></title>

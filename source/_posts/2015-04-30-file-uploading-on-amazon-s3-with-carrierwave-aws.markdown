@@ -79,7 +79,6 @@ CarrierWave.configure do |config|
     config.enable_processing = Rails.env.development?
   end
 end
-end
 ```
 
-I use [Figaro](https://github.com/laserlemon/figaro) to configure environment variables which are set in the `application.yml` file.
+Using [Figaro](https://github.com/laserlemon/figaro) to configure environment variables which are set in the `application.yml` file.

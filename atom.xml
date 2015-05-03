@@ -4,7 +4,7 @@
   <title><![CDATA[Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-05-01T15:41:22+08:00</updated>
+  <updated>2015-05-03T13:23:07+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,75 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Use Figaro to Configure Environment Variables]]></title>
+    <link href="http://kmc653.github.io/blog/2015/05/03/use-figaro-to-configure-environment-variables/"/>
+    <updated>2015-05-03T12:00:18+08:00</updated>
+    <id>http://kmc653.github.io/blog/2015/05/03/use-figaro-to-configure-environment-variables</id>
+    <content type="html"><![CDATA[<p>In developing web application, we must have some sensitive information that should be hidden. Using <code>figaro</code>, which place sensitive information in a Git-ignored YAML file, can offer this service for us.</p>
+
+<h1>Install Figaro gem</h1>
+
+<p>Add <code>figaro</code> gem in the Gemfile and run <code>bundle install</code></p>
+
+<pre><code>gem "fiagro"
+</code></pre>
+
+<p>And then run installation:</p>
+
+<pre><code>$ figaro install
+</code></pre>
+
+<p>This command will create a <code>application.yml</code> file in <code>config</code>, and this yml file will also be added in <code>.gitignore</code>. We can place our own configuration in here:</p>
+
+<figure class='code'><figcaption><span>application.yml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">development</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">AWS_ACCESS_KEY_ID</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">AWS_SECRET_ACCESS_KEY</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">S3_BUCKET_NAME</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">test</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">AWS_ACCESS_KEY_ID</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">AWS_SECRET_ACCESS_KEY</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">S3_BUCKET_NAME</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>
+</span><span class='line'><span class="ss">production</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">AWS_ACCESS_KEY_ID</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">AWS_SECRET_ACCESS_KEY</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">S3_BUCKET_NAME</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For example, if you want to get <code>S3_BUCKET_NAME</code>, you use <code>ENV['S3_BUCKET_NAME']</code>.</p>
+
+<h1>Set Configuration to Heroku</h1>
+
+<p><code>figaro</code> offer an easy way to set remote Heroku configuration:</p>
+
+<pre><code>$ figaro heroku:set -e production
+</code></pre>
+
+<p>This command will set environment variables to your application on the Heroku.</p>
+
+<p>By the way, the environment option for the <code>heroku:set</code> is required. In above example, the environment is set to <code>production</code>. The default will be <code>development</code> if unspecified.</p>
+
+<p>Reference from <a href="https://github.com/laserlemon/figaro">laserlemon/figaro</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[File Uploading on Amazon S3 with Carrierwave-aws]]></title>
@@ -123,7 +192,6 @@
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-<span class='line-number'>15</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">CarrierWave</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
 </span><span class='line'>  <span class="k">if</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">staging?</span> <span class="o">||</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">production?</span>
 </span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">storage</span>    <span class="o">=</span> <span class="ss">:aws</span>
@@ -138,11 +206,10 @@
 </span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">enable_processing</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">development?</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I use <a href="https://github.com/laserlemon/figaro">Figaro</a> to configure environment variables which are set in the <code>application.yml</code> file.</p>
+<p>Using <a href="https://github.com/laserlemon/figaro">Figaro</a> to configure environment variables which are set in the <code>application.yml</code> file.</p>
 ]]></content>
   </entry>
   

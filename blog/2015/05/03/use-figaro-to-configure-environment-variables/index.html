@@ -1,0 +1,196 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Use Figaro to Configure Environment Variables - Mr. Anderson</title>
+	<meta name="author" content="Kai-Min Change">
+
+	
+	<meta name="description" content="In developing web application, we must have some sensitive information that should be hidden. Using figaro, which place sensitive information in a &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Mr. Anderson" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script async="true" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Mr. Anderson</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="https://www.google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:kmc653.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="https://www.google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:kmc653.github.io">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">Use Figaro to Configure Environment Variables</h2>
+	<div class="entry-content"><p>In developing web application, we must have some sensitive information that should be hidden. Using <code>figaro</code>, which place sensitive information in a Git-ignored YAML file, can offer this service for us.</p>
+
+<h1>Install Figaro gem</h1>
+
+<p>Add <code>figaro</code> gem in the Gemfile and run <code>bundle install</code></p>
+
+<pre><code>gem "fiagro"
+</code></pre>
+
+<p>And then run installation:</p>
+
+<pre><code>$ figaro install
+</code></pre>
+
+<p>This command will create a <code>application.yml</code> file in <code>config</code>, and this yml file will also be added in <code>.gitignore</code>. We can place our own configuration in here:</p>
+
+<figure class='code'><figcaption><span>application.yml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">development</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">AWS_ACCESS_KEY_ID</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">AWS_SECRET_ACCESS_KEY</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">S3_BUCKET_NAME</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">test</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">AWS_ACCESS_KEY_ID</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">AWS_SECRET_ACCESS_KEY</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">S3_BUCKET_NAME</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>
+</span><span class='line'><span class="ss">production</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">AWS_ACCESS_KEY_ID</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">AWS_SECRET_ACCESS_KEY</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span><span class='line'>  <span class="ss">S3_BUCKET_NAME</span><span class="p">:</span> <span class="n">xxxxxxxxxx</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For example, if you want to get <code>S3_BUCKET_NAME</code>, you use <code>ENV['S3_BUCKET_NAME']</code>.</p>
+
+<h1>Set Configuration to Heroku</h1>
+
+<p><code>figaro</code> offer an easy way to set remote Heroku configuration:</p>
+
+<pre><code>$ figaro heroku:set -e production
+</code></pre>
+
+<p>This command will set environment variables to your application on the Heroku.</p>
+
+<p>By the way, the environment option for the <code>heroku:set</code> is required. In above example, the environment is set to <code>production</code>. The default will be <code>development</code> if unspecified.</p>
+
+<p>Reference from <a href="https://github.com/laserlemon/figaro">laserlemon/figaro</a></p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-03T12:00:18+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+</div>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		<a class="addthis_button_tweet"></a>
+		
+		
+		
+	</div>
+	
+</div>
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2015
+
+    Kai-Min Change
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>

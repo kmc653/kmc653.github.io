@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "set up a staging server on heroku"
+title: "Set up a staging server on heroku"
 date: 2015-02-07 21:37:37 +0800
 comments: true
 category: ruby on rails, heroku 

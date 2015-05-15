@@ -3,7 +3,7 @@ layout: post
 title: "Use Figaro to Configure Environment Variables"
 date: 2015-05-03 12:00:18 +0800
 comments: true
-categories: 
+category: ruby on rails 
 ---
 In developing web application, we must have some sensitive information that should be hidden. Using `figaro`, which place sensitive information in a Git-ignored YAML file, can offer this service for us.
 

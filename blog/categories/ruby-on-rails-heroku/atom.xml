@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby on rails, heroku | Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/blog/categories/ruby-on-rails-heroku/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-05-03T13:23:07+08:00</updated>
+  <updated>2015-05-15T14:18:43+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -87,7 +87,7 @@ gem 'paratrooper'
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[set up a staging server on heroku]]></title>
+    <title type="html"><![CDATA[Set up a staging server on heroku]]></title>
     <link href="http://kmc653.github.io/blog/2015/02/07/set-up-a-staging-server-on-heroku/"/>
     <updated>2015-02-07T21:37:37+08:00</updated>
     <id>http://kmc653.github.io/blog/2015/02/07/set-up-a-staging-server-on-heroku</id>

@@ -4,7 +4,7 @@
   <title><![CDATA[Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-05-03T13:23:07+08:00</updated>
+  <updated>2015-05-15T14:18:43+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,297 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Use Stripe to charge credit card with custom form]]></title>
+    <link href="http://kmc653.github.io/blog/2015/05/03/use-stripe-to-charge-credit-card-with-custom-form/"/>
+    <updated>2015-05-03T13:37:25+08:00</updated>
+    <id>http://kmc653.github.io/blog/2015/05/03/use-stripe-to-charge-credit-card-with-custom-form</id>
+    <content type="html"><![CDATA[<h1>Why use Stripe</h1>
+
+<p>If you want to process credit card payment, a merchant account is needed to accept credit card. Moreover, you also need an account with Authorize.net, which is a gateway that gather credit card charge information from us, process payment, and then deposit the money into your merchant account.</p>
+
+<p>However, Stripe doesn&rsquo;t need a merchant account and gateway. It&rsquo;s responsible for storing payment information, subscription and direct transfer money to your bank account. Furthermore, customer credit card will never flow through your web server by using <code>stripe.js</code>. <code>stripe.js</code> send these information to Stripe directly and get a token as response. You can use this token to process payment.</p>
+
+<h1>Apply an account of Stripe</h1>
+
+<p>You should apply an account on <a href="https://stripe.com/">Stripe</a>. After applying, you will get the keys to communicate with Stripe. Moreover, you also can see the events or logs with your Stripe account.</p>
+
+<h1>Installation</h1>
+
+<p>Add stripe in Gemfile and run <code>bundle install</code>:</p>
+
+<pre><code>gem 'stripe'
+</code></pre>
+
+<h1>Payments.js file</h1>
+
+<p>And then, create a <code>payments.js</code> file in <code>app/assets/javascripts</code> path:</p>
+
+<figure class='code'><figcaption><span>payments.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">jQuery</span><span class="p">(</span><span class="n">function</span><span class="p">(</span><span class="err">$</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="err">$</span><span class="p">(</span><span class="s1">&#39;#payment-form&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">var</span> <span class="vg">$form</span> <span class="o">=</span> <span class="err">$</span><span class="p">(</span><span class="n">this</span><span class="p">);</span>
+</span><span class='line'>    <span class="vg">$form</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">prop</span><span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kp">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="no">Stripe</span><span class="o">.</span><span class="n">card</span><span class="o">.</span><span class="n">createToken</span><span class="p">(</span><span class="vg">$form</span><span class="p">,</span> <span class="n">stripeResponseHandler</span><span class="p">);</span>
+</span><span class='line'>    <span class="sr">//</span> <span class="no">Prevent</span> <span class="n">the</span> <span class="n">form</span> <span class="n">from</span> <span class="n">submitting</span> <span class="n">with</span> <span class="n">the</span> <span class="n">default</span> <span class="n">action</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kp">false</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'><span class="n">function</span> <span class="n">stripeResponseHandler</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">var</span> <span class="vg">$form</span> <span class="o">=</span> <span class="err">$</span><span class="p">(</span><span class="s1">&#39;#payment-form&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="sr">//</span> <span class="no">Show</span> <span class="n">the</span> <span class="n">errors</span> <span class="n">on</span> <span class="n">the</span> <span class="n">form</span>
+</span><span class='line'>    <span class="vg">$form</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.payment-errors&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">);</span>
+</span><span class='line'>    <span class="vg">$form</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">prop</span><span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="kp">false</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="sr">//</span> <span class="n">response</span> <span class="n">contains</span> <span class="nb">id</span> <span class="ow">and</span> <span class="n">card</span><span class="p">,</span> <span class="n">which</span> <span class="n">contains</span> <span class="n">additional</span> <span class="n">card</span> <span class="n">details</span>
+</span><span class='line'>    <span class="n">var</span> <span class="n">token</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">id</span><span class="p">;</span>
+</span><span class='line'>    <span class="sr">//</span> <span class="no">Insert</span> <span class="n">the</span> <span class="n">token</span> <span class="n">into</span> <span class="n">the</span> <span class="n">form</span> <span class="n">so</span> <span class="n">it</span> <span class="nb">gets</span> <span class="n">submitted</span> <span class="n">to</span> <span class="n">the</span> <span class="n">server</span>
+</span><span class='line'>    <span class="vg">$form</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="err">$</span><span class="p">(</span><span class="s1">&#39;&lt;input type=&quot;hidden&quot; name=&quot;stripeToken&quot; /&gt;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">val</span><span class="p">(</span><span class="n">token</span><span class="p">));</span>
+</span><span class='line'>    <span class="sr">//</span> <span class="ow">and</span> <span class="n">submit</span>
+</span><span class='line'>    <span class="vg">$form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">submit</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Custome form in view template</h1>
+
+<figure class='code'><figcaption><span>new.html.haml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">=</span> <span class="n">content_for</span> <span class="ss">:head</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">%</span><span class="n">script</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;https://js.stripe.com/v2/&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="ss">:javascript</span>
+</span><span class='line'>    <span class="no">Stripe</span><span class="o">.</span><span class="n">setPublishableKey</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;STRIPE_PUBLISHABLE_KEY&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="o">=</span> <span class="n">javascript_include_tag</span> <span class="s1">&#39;payments&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=</span> <span class="n">render</span> <span class="s1">&#39;shared/header&#39;</span><span class="p">,</span> <span class="ss">header</span><span class="p">:</span> <span class="s2">&quot;Donation&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">%</span><span class="n">h4</span> <span class="no">Please</span> <span class="n">make</span> <span class="n">a</span> <span class="n">donation</span> <span class="n">with</span> <span class="n">your</span> <span class="n">credit</span> <span class="n">card</span><span class="o">.</span>
+</span><span class='line'><span class="o">=</span> <span class="n">form_tag</span> <span class="n">donations_path</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;payment-form&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">credit_card</span>
+</span><span class='line'>    <span class="o">%</span><span class="n">span</span><span class="o">.</span><span class="n">payment</span><span class="o">-</span><span class="n">errors</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">control</span><span class="o">-</span><span class="n">group</span>
+</span><span class='line'>      <span class="o">%</span><span class="n">label</span> <span class="no">Credit</span> <span class="no">Card</span> <span class="no">Number</span>
+</span><span class='line'>      <span class="o">%</span><span class="n">input</span><span class="o">.</span><span class="n">span3</span><span class="o">.</span><span class="n">card</span><span class="o">-</span><span class="n">number</span><span class="c1">#card-number(type=&quot;text&quot; data-stripe=&quot;number&quot;)</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">control</span><span class="o">-</span><span class="n">group</span>
+</span><span class='line'>      <span class="o">%</span><span class="n">label</span> <span class="no">Security</span> <span class="no">Code</span>
+</span><span class='line'>      <span class="o">%</span><span class="n">input</span><span class="o">.</span><span class="n">span3</span><span class="o">.</span><span class="n">card</span><span class="o">-</span><span class="n">cvc</span><span class="c1">#security-code(type=&quot;text&quot; data-stripe=&quot;cvc&quot;)</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">control</span><span class="o">-</span><span class="n">group</span>
+</span><span class='line'>      <span class="o">%</span><span class="n">label</span> <span class="no">Expiration</span>
+</span><span class='line'>      <span class="o">=</span> <span class="n">select_month</span><span class="p">(</span><span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">,</span> <span class="p">{</span><span class="ss">add_month_numbers</span><span class="p">:</span> <span class="kp">true</span><span class="p">},</span> <span class="nb">name</span><span class="p">:</span> <span class="kp">nil</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">stripe</span><span class="p">:</span> <span class="s2">&quot;exp-month&quot;</span><span class="p">},</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;card-expiry-month&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">=</span> <span class="n">select_year</span><span class="p">(</span><span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="p">{</span><span class="ss">start_year</span><span class="p">:</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="ss">end_year</span><span class="p">:</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">4</span><span class="p">},</span> <span class="nb">name</span><span class="p">:</span> <span class="kp">nil</span><span class="p">,</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">stripe</span><span class="p">:</span> <span class="s2">&quot;exp-year&quot;</span><span class="p">},</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;card-expiry-year&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">actions</span>
+</span><span class='line'>    <span class="o">=</span> <span class="n">submit_tag</span> <span class="s2">&quot;Submit Payment&quot;</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;btn btn-default&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Remember to add <code>%script(type="text/javascript" src="https://js.stripe.com/v2/")</code>, Stripe publish key and <code>javascript_include_tag 'payments'</code> in view template to communicate with Stripe.</p>
+
+<h1>Process payment</h1>
+
+<p>When you fill with card information and click <code>Submit Payment</code>, you will get a token from Stripe server, and use this token to process payment.</p>
+
+<figure class='code'><figcaption><span>donations_controller.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">DonationsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="n">before_action</span> <span class="ss">:require_user</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
+</span><span class='line'>    <span class="vi">@user</span> <span class="o">=</span> <span class="n">current_user</span>
+</span><span class='line'>    <span class="n">token</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:stripeToken</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">charge</span> <span class="o">=</span> <span class="no">StripeWrapper</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span><span class='line'>      <span class="ss">:source</span> <span class="o">=&gt;</span> <span class="n">token</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:description</span> <span class="o">=&gt;</span> <span class="s2">&quot;Donation from </span><span class="si">#{</span><span class="vi">@user</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">.&quot;</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">charge</span><span class="o">.</span><span class="n">successful?</span>
+</span><span class='line'>      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Thank you for your generous support!&quot;</span>
+</span><span class='line'>      <span class="n">redirect_to</span> <span class="n">donate_path</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="n">charge</span><span class="o">.</span><span class="n">error_message</span>
+</span><span class='line'>      <span class="n">redirect_to</span> <span class="n">donate_path</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the example, it wraps payment process in a <code>stripe_wrapper.rb</code> file. The advantages of wrapping api is reusable and easy to run test.</p>
+
+<figure class='code'><figcaption><span>stripe_wrapper.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">StripeWrapper</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Charge</span>
+</span><span class='line'>    <span class="kp">attr_reader</span> <span class="ss">:response</span><span class="p">,</span> <span class="ss">:status</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@response</span> <span class="o">=</span> <span class="n">response</span>
+</span><span class='line'>      <span class="vi">@status</span> <span class="o">=</span> <span class="n">status</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">create</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{})</span>
+</span><span class='line'>      <span class="no">StripeWrapper</span><span class="o">.</span><span class="n">set_api_key</span>
+</span><span class='line'>      <span class="k">begin</span>
+</span><span class='line'>        <span class="n">response</span> <span class="o">=</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span><span class='line'>          <span class="ss">:amount</span> <span class="o">=&gt;</span> <span class="mi">500</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:currency</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:source</span> <span class="o">=&gt;</span> <span class="n">options</span><span class="o">[</span><span class="ss">:source</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:description</span> <span class="o">=&gt;</span> <span class="n">options</span><span class="o">[</span><span class="ss">:description</span><span class="o">]</span>
+</span><span class='line'>        <span class="p">)</span>
+</span><span class='line'>        <span class="kp">new</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="ss">:success</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">rescue</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">CardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>        <span class="kp">new</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="ss">:error</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">successful?</span>
+</span><span class='line'>      <span class="n">status</span> <span class="o">==</span> <span class="ss">:success</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">error_message</span>
+</span><span class='line'>      <span class="n">response</span><span class="o">.</span><span class="n">message</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">set_api_key</span>
+</span><span class='line'>    <span class="no">Stripe</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;STRIPE_SECRET_KEY&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Configure API keys</h1>
+
+<p>In the example, I used <code>figaro</code> to configure environment variables.</p>
+
+<figure class='code'><figcaption><span>application.yml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">development</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">STRIPE_PUBLISHABLE_KEY</span><span class="p">:</span> <span class="n">your</span> <span class="nb">test</span> <span class="n">publishable</span> <span class="n">key</span>
+</span><span class='line'>  <span class="ss">STRIPE_SECRET_KEY</span><span class="p">:</span> <span class="n">your</span> <span class="nb">test</span> <span class="n">sercet</span> <span class="n">key</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">test</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">STRIPE_PUBLISHABLE_KEY</span><span class="p">:</span> <span class="n">your</span> <span class="nb">test</span> <span class="n">publishable</span> <span class="n">key</span>
+</span><span class='line'>  <span class="ss">STRIPE_SECRET_KEY</span><span class="p">:</span> <span class="n">your</span> <span class="nb">test</span> <span class="n">sercet</span> <span class="n">key</span>
+</span><span class='line'>
+</span><span class='line'><span class="ss">production</span><span class="p">:</span>
+</span><span class='line'>  <span class="ss">STRIPE_PUBLISHABLE_KEY</span><span class="p">:</span> <span class="n">your</span> <span class="n">live</span> <span class="n">publishable</span> <span class="n">key</span>
+</span><span class='line'>  <span class="ss">STRIPE_SECRET_KEY</span><span class="p">:</span> <span class="n">your</span> <span class="n">live</span> <span class="n">secret</span> <span class="n">key</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Use Figaro to Configure Environment Variables]]></title>
@@ -283,7 +574,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[set up a staging server on heroku]]></title>
+    <title type="html"><![CDATA[Set up a staging server on heroku]]></title>
     <link href="http://kmc653.github.io/blog/2015/02/07/set-up-a-staging-server-on-heroku/"/>
     <updated>2015-02-07T21:37:37+08:00</updated>
     <id>http://kmc653.github.io/blog/2015/02/07/set-up-a-staging-server-on-heroku</id>

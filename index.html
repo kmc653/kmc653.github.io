@@ -7,7 +7,7 @@
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="Why use Stripe If you want to process credit card payment, a merchant account is needed to accept credit card. Moreover, you also need an account &hellip;">
+	<meta name="description" content="We are able to use collection or individual members of the collection to create additional routes, rather than just seven routes of default. Member &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -74,6 +74,99 @@
 		
 	
 	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2015/05/21/member-routes-and-collection-routes/">
+		
+			Member Routes and Collection Routes</a>
+	</h2>
+	<div class="entry-content">
+		<p>We are able to use collection or individual members of the collection to create additional routes, rather than just seven routes of default.</p>
+
+<h1>Member routes</h1>
+
+<p>Add a <code>member</code> block into a resource block:</p>
+
+<pre><code>resources :conversations, only: [:index, :show, :destroy] do
+  member do
+    post :reply
+  end
+end
+</code></pre>
+
+<p>After running <code>rake routes</code> in command, it will show:</p>
+
+<pre><code>            Prefix Verb   URI Pattern                               Controller#Action
+reply_conversation POST   /conversations/:id/reply(.:format)        conversations#reply
+</code></pre>
+
+<p>It will also create the <code>reply_conversation_path</code> and <code>reply_conversation_url</code> helpers.</p>
+
+<p>You also can do like this if you only have a member route:</p>
+
+<pre><code>resources :conversations, only: [:index, :show, :destroy] do
+  post :reply, on: :member
+end
+</code></pre>
+
+<h1>Collection routes</h1>
+
+<p>Add a <code>collection</code> block into a resource block:</p>
+
+<pre><code>resources :videos do
+  collection do
+    get :search
+  end
+end
+</code></pre>
+
+<p>After running <code>rake routes</code> in command, it will show:</p>
+
+<pre><code>       Prefix Verb   URI Pattern                             Controller#Action
+search_videos GET    /videos/search(.:format)                videos#search
+</code></pre>
+
+<p>You also can do like this if you only have a member route:</p>
+
+<pre><code>resources :videos do
+  get :search, on: :collection
+end
+</code></pre>
+
+<p>Reference from <a href="http://guides.rubyonrails.org/routing.html">RailsGuides</a>.</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-21T22:01:18+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby-on-rails/'>ruby on rails</a>
+
+
+</div>
+	
+</div>
+</article>
 
 
     <article class="post">
@@ -1312,74 +1405,6 @@ wordsfarm-staging git@heroku.com:wordsfarm-staging.git (push)
 
 
 	<a class='category' href='/blog/categories/ruby-on-rails/'>ruby on rails</a>
-
-
-</div>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2014/12/27/the-usage-of-method-number-strip-and-slice-of-string/">
-		
-			The Usage of Strip, Slice and Split Methods of String</a>
-	</h2>
-	<div class="entry-content">
-		<h1>Strip</h1>
-
-<p>The method <code>strip</code> is used in a string. Returning the same content of string with leading and trailing whitespace removed.</p>
-
-<pre><code>"   Kevin   ".strip     #=&gt; "Kevin"
-</code></pre>
-
-<p>The string will be changed if we use <code>strip!</code>. Return <code>nil</code> means the string was not altered.</p>
-
-<pre><code>"Kevin".strip!     #=&gt; nil
-</code></pre>
-
-<h1>Slice</h1>
-
-<p>The method <code>slice</code> is used in a string.<br/>
-* <em>slice( index ) => str or nil</em><br/>
-* <em>slice( start, length ) => str or nil</em><br/>
-* <em>slice( range ) => str or nil</em><br/>
-* <em>slice( regexp ) => str or nil</em><br/>
-* <em>slice( regexp, capture ) => str or nil</em><br/>
-* <em>slice( match_str ) => str or nil</em></p>
-
-<pre><code>"kevin".slice(3)     #=&gt; "i"  
-"kevin".slice(3, 2)     #=&gt; "in"  
-"kevin".slice(1..3)     #=&gt; "evi"  
-"kevinaeiou".slice(/[aeiou][0...9]/)
-"kevin".slice("v")     #=&gt; "v"
-</code></pre>
-
-		
-		
-	</div>
-
-
-<div class="meta">
-	<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-12-27T19:49:30+08:00" pubdate data-updated="true"></time></div>
-	<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ruby/'>ruby</a>
 
 
 </div>

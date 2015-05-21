@@ -4,7 +4,7 @@
   <title><![CDATA[Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-05-15T14:18:43+08:00</updated>
+  <updated>2015-05-21T23:12:19+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Member Routes and Collection Routes]]></title>
+    <link href="http://kmc653.github.io/blog/2015/05/21/member-routes-and-collection-routes/"/>
+    <updated>2015-05-21T22:01:18+08:00</updated>
+    <id>http://kmc653.github.io/blog/2015/05/21/member-routes-and-collection-routes</id>
+    <content type="html"><![CDATA[<p>We are able to use collection or individual members of the collection to create additional routes, rather than just seven routes of default.</p>
+
+<h1>Member routes</h1>
+
+<p>Add a <code>member</code> block into a resource block:</p>
+
+<pre><code>resources :conversations, only: [:index, :show, :destroy] do
+  member do
+    post :reply
+  end
+end
+</code></pre>
+
+<p>After running <code>rake routes</code> in command, it will show:</p>
+
+<pre><code>            Prefix Verb   URI Pattern                               Controller#Action
+reply_conversation POST   /conversations/:id/reply(.:format)        conversations#reply
+</code></pre>
+
+<p>It will also create the <code>reply_conversation_path</code> and <code>reply_conversation_url</code> helpers.</p>
+
+<p>You also can do like this if you only have a member route:</p>
+
+<pre><code>resources :conversations, only: [:index, :show, :destroy] do
+  post :reply, on: :member
+end
+</code></pre>
+
+<h1>Collection routes</h1>
+
+<p>Add a <code>collection</code> block into a resource block:</p>
+
+<pre><code>resources :videos do
+  collection do
+    get :search
+  end
+end
+</code></pre>
+
+<p>After running <code>rake routes</code> in command, it will show:</p>
+
+<pre><code>       Prefix Verb   URI Pattern                             Controller#Action
+search_videos GET    /videos/search(.:format)                videos#search
+</code></pre>
+
+<p>You also can do like this if you only have a member route:</p>
+
+<pre><code>resources :videos do
+  get :search, on: :collection
+end
+</code></pre>
+
+<p>Reference from <a href="http://guides.rubyonrails.org/routing.html">RailsGuides</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Use Stripe to charge credit card with custom form]]></title>

@@ -7,15 +7,7 @@
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="Delegate delegate is particularly useful with Active Record associations: 1
-2
-3
-4
-5
-6
-7
-class Movie &lt; ActiveRecord::Base belongs_to :director
-end &hellip;">
+	<meta name="description" content="Strip The method strip is used in a string. Returning the same content of string with leading and trailing whitespace removed. " Kevin ".strip #=&gt &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -82,6 +74,74 @@ end &hellip;">
 		
 	
 	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2014/12/27/the-usage-of-method-number-strip-and-slice-of-string/">
+		
+			The Usage of Strip, Slice and Split Methods of String</a>
+	</h2>
+	<div class="entry-content">
+		<h1>Strip</h1>
+
+<p>The method <code>strip</code> is used in a string. Returning the same content of string with leading and trailing whitespace removed.</p>
+
+<pre><code>"   Kevin   ".strip     #=&gt; "Kevin"
+</code></pre>
+
+<p>The string will be changed if we use <code>strip!</code>. Return <code>nil</code> means the string was not altered.</p>
+
+<pre><code>"Kevin".strip!     #=&gt; nil
+</code></pre>
+
+<h1>Slice</h1>
+
+<p>The method <code>slice</code> is used in a string.<br/>
+* <em>slice( index ) => str or nil</em><br/>
+* <em>slice( start, length ) => str or nil</em><br/>
+* <em>slice( range ) => str or nil</em><br/>
+* <em>slice( regexp ) => str or nil</em><br/>
+* <em>slice( regexp, capture ) => str or nil</em><br/>
+* <em>slice( match_str ) => str or nil</em></p>
+
+<pre><code>"kevin".slice(3)     #=&gt; "i"  
+"kevin".slice(3, 2)     #=&gt; "in"  
+"kevin".slice(1..3)     #=&gt; "evi"  
+"kevinaeiou".slice(/[aeiou][0...9]/)
+"kevin".slice("v")     #=&gt; "v"
+</code></pre>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-27T19:49:30+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby/'>ruby</a>
+
+
+</div>
+	
+</div>
+</article>
 
 
     <article class="post">

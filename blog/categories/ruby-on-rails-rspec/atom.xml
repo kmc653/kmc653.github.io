@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ruby on rails, rspec | Mr. Anderson]]></title>
+  <link href="http://kmc653.github.io/blog/categories/ruby-on-rails-rspec/atom.xml" rel="self"/>
+  <link href="http://kmc653.github.io/"/>
+  <updated>2015-06-13T16:47:42+08:00</updated>
+  <id>http://kmc653.github.io/</id>
+  <author>
+    <name><![CDATA[Kai-Min Change]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Test doubles and method stubs]]></title>
+    <link href="http://kmc653.github.io/blog/2015/05/22/test-doubles-and-method-stubs/"/>
+    <updated>2015-05-22T16:11:30+08:00</updated>
+    <id>http://kmc653.github.io/blog/2015/05/22/test-doubles-and-method-stubs</id>
+    <content type="html"><![CDATA[<p>Sometimes we use <code>test double</code> and <code>method stub</code> to replace objects or methods that aren&rsquo;t what we really want to test. It will help us write testing efficiently within a specific scope.</p>
+
+<p>In the following example, I would like to test donations controller:
+<figure class='code'><figcaption><span>donations_controller.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">DonationsController</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="n">before_action</span> <span class="ss">:require_user</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  def create</span>
+</span><span class='line'><span class="sr">    @user = current_user</span>
+</span><span class='line'><span class="sr">    token = params[:stripeToken]&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">charge</span> <span class="o">=</span> <span class="no">StripeWrapper</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span><span class='line'>  <span class="ss">:source</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">token</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:description</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="s2">&quot;Donation from </span><span class="si">#{</span><span class="vi">@user</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">.&quot;</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">charge</span><span class="o">.</span><span class="n">successful?</span>
+</span><span class='line'>  <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Thank you for your generous support!&quot;</span>
+</span><span class='line'>  <span class="n">redirect_to</span> <span class="n">donate_path</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>  <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="n">charge</span><span class="o">.</span><span class="n">error_message</span>
+</span><span class='line'>  <span class="n">redirect_to</span> <span class="n">donate_path</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="no">And</span> <span class="n">the</span> <span class="n">testing</span> <span class="ss">code</span><span class="p">:</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/code&gt;ruby donations_controller_spec.rb</span>
+</span><span class='line'><span class="sr">require &amp;lsquo;spec_helper&amp;rsquo;&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="n">describe</span> <span class="no">DonationsController</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">describe</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">POST</span> <span class="n">create</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="k">do</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;before do</span>
+</span><span class='line'><span class="sr">  set_current_user</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">context &quot;with a successful charge&quot; do</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  before do</span>
+</span><span class='line'><span class="sr">    charge = double(&#39;charge&#39;) #user test double to create a fake charge object.</span>
+</span><span class='line'><span class="sr">    charge.stub(:successful?).and_return(true)  #stub successful? method to return true.</span>
+</span><span class='line'><span class="sr">    StripeWrapper::Charge.stub(:create).and_return(charge)</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">    post :create, token: &#39;123&#39;</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  it &quot;sets the flash success message&quot; do</span>
+</span><span class='line'><span class="sr">    flash[:success].should == &#39;Thank you for your generous support!&#39;</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">  it &quot;redirects to the new dnation page&quot; do</span>
+</span><span class='line'><span class="sr">    response.should redirect_to donate_path</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">context &quot;with an failed charge&quot; do</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  before do</span>
+</span><span class='line'><span class="sr">    charge = double(&#39;charge&#39;)</span>
+</span><span class='line'><span class="sr">    charge.stub(:successful?).and_return(false)</span>
+</span><span class='line'><span class="sr">    charge.stub(:error_message).and_return(&#39;Your card was declined&#39;)</span>
+</span><span class='line'><span class="sr">    StripeWrapper::Charge.stub(:create).and_return(charge)</span>
+</span><span class='line'><span class="sr">    post :create, token: &#39;123&#39;</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">  it &quot;sets the flash error message&quot; do</span>
+</span><span class='line'><span class="sr">    flash[:error].should == &#39;Your card was declined&#39;</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">  it &quot;redirects to the new dnation page&quot; do</span>
+</span><span class='line'><span class="sr">    response.should redirect_to donate_path</span>
+</span><span class='line'><span class="sr">  end</span>
+</span><span class='line'><span class="sr">end</span>
+</span><span class='line'><span class="sr">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;</span><span class="sr">/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  end</span>
+</span><span class='line'><span class="sr">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>Test double object which can be think of a fake object. The inside words is just a name for the test double.</p>
+
+<p>Method stub can be used to stub a specific method and return a specific value.</p>
+
+<p>In above example, I&rsquo;ve tested <code>StripeWrapper</code> before, so I should stub to replace that with something cheap which is <code>test double</code>, and also stub the result we desire.</p>
+
+<p>Hence, use <code>test double</code> and <code>method stub</code> can help us avoid some methods which computation is expensive, and make our testing specific and efficient.</p>
+]]></content>
+  </entry>
+  
+</feed>

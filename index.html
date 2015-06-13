@@ -7,7 +7,7 @@
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="We are able to use collection or individual members of the collection to create additional routes, rather than just seven routes of default. Member &hellip;">
+	<meta name="description" content="Sometimes we use test double and method stub to replace objects or methods that aren&rsquo;t what we really want to test. It will help us write &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -74,6 +74,197 @@
 		
 	
 	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2015/05/22/test-doubles-and-method-stubs/">
+		
+			Test Doubles and Method Stubs</a>
+	</h2>
+	<div class="entry-content">
+		<p>Sometimes we use <code>test double</code> and <code>method stub</code> to replace objects or methods that aren&rsquo;t what we really want to test. It will help us write testing efficiently within a specific scope.</p>
+
+<p>In the following example, I would like to test donations controller:</p>
+
+<figure class='code'><figcaption><span>donations_controller.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">DonationsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="n">before_action</span> <span class="ss">:require_user</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
+</span><span class='line'>    <span class="vi">@user</span> <span class="o">=</span> <span class="n">current_user</span>
+</span><span class='line'>    <span class="n">token</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:stripeToken</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">charge</span> <span class="o">=</span> <span class="no">StripeWrapper</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span><span class='line'>      <span class="ss">:source</span> <span class="o">=&gt;</span> <span class="n">token</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:description</span> <span class="o">=&gt;</span> <span class="s2">&quot;Donation from </span><span class="si">#{</span><span class="vi">@user</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">.&quot;</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">charge</span><span class="o">.</span><span class="n">successful?</span>
+</span><span class='line'>      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Thank you for your generous support!&quot;</span>
+</span><span class='line'>      <span class="n">redirect_to</span> <span class="n">donate_path</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="n">charge</span><span class="o">.</span><span class="n">error_message</span>
+</span><span class='line'>      <span class="n">redirect_to</span> <span class="n">donate_path</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the testing code:</p>
+
+<figure class='code'><figcaption><span>donations_controller_spec.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">describe</span> <span class="no">DonationsController</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">before</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">set_current_user</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">context</span> <span class="s2">&quot;with a successful charge&quot;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">before</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">charge</span> <span class="o">=</span> <span class="n">double</span><span class="p">(</span><span class="s1">&#39;charge&#39;</span><span class="p">)</span> <span class="c1">#user test double to create a fake charge object.</span>
+</span><span class='line'>        <span class="n">charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:successful?</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="kp">true</span><span class="p">)</span>  <span class="c1">#stub successful? method to return true.</span>
+</span><span class='line'>        <span class="no">StripeWrapper</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:create</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">charge</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="s1">&#39;123&#39;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">it</span> <span class="s2">&quot;sets the flash success message&quot;</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">].</span><span class="n">should</span> <span class="o">==</span> <span class="s1">&#39;Thank you for your generous support!&#39;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="n">it</span> <span class="s2">&quot;redirects to the new dnation page&quot;</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">donate_path</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">context</span> <span class="s2">&quot;with an failed charge&quot;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">before</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">charge</span> <span class="o">=</span> <span class="n">double</span><span class="p">(</span><span class="s1">&#39;charge&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:successful?</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="kp">false</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:error_message</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="s1">&#39;Your card was declined&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="no">StripeWrapper</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:create</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">charge</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="s1">&#39;123&#39;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">it</span> <span class="s2">&quot;sets the flash error message&quot;</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">].</span><span class="n">should</span> <span class="o">==</span> <span class="s1">&#39;Your card was declined&#39;</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="n">it</span> <span class="s2">&quot;redirects to the new dnation page&quot;</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">donate_path</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Test double object which can be think of a fake object. The inside words is just a name for the test double.</p>
+
+<p>Method stub can be used to stub a specific method and return a specific value.</p>
+
+<p>In above example, I&rsquo;ve tested <code>StripeWrapper</code> before, so I should stub to replace that with something cheap which is <code>test double</code>, and also stub the result we desire.</p>
+
+<p>Hence, use <code>test double</code> and <code>method stub</code> can help us avoid some methods which computation is expensive, and make our testing specific and efficient.</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-22T16:11:30+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby-on-rails-rspec/'>ruby on rails, rspec</a>
+
+
+</div>
+	
+</div>
+</article>
 
 
     <article class="post">
@@ -1274,133 +1465,6 @@ wordsfarm-staging git@heroku.com:wordsfarm-staging.git (push)
 
 
 <time datetime="2015-01-31T15:41:25+08:00" pubdate data-updated="true"></time></div>
-	<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ruby-on-rails/'>ruby on rails</a>
-
-
-</div>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2015/01/29/use-concerns-to-dry-up-model/">
-		
-			Use Concerns to DRY Up Model</a>
-	</h2>
-	<div class="entry-content">
-		<p>Different models in Rails application would have the code that have the same logic or functionality. Using <code>concerns</code> to put these same code in a module, which allow you to use in any models without repeating code.</p>
-
-<h1>Set the path of module</h1>
-
-<p>At first, we should add a line of code in <code>config/application.rb</code> to tell our app where to load the module file.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">autoload_paths</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">/lib&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Put the same functional code in module</h1>
-
-<p>For instance, there is a invitation model which would generate token before creating a invitation.</p>
-
-<figure class='code'><figcaption><span>invitation.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Invitation</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-</span><span class='line'>  <span class="n">before_create</span> <span class="ss">:generate_token</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:inviter</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">validates_presence_of</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">generate_token</span>
-</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We&rsquo;re able to put <code>before_create</code> and <code>generate_token</code> method in a module named <code>Tokenable</code>.</p>
-
-<figure class='code'><figcaption><span>tokenable.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Tokenable</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">before_create</span> <span class="ss">:generate_token</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">generate_token</span>
-</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Afterward, we add <code>include</code> following the name of module in invitation model.</p>
-
-<figure class='code'><figcaption><span>invitation.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Invitation</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Tokenable</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:inviter</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">validates_presence_of</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Therefore, there is no need to have redundant code to acquire the same functionality.</p>
-
-		
-		
-	</div>
-
-
-<div class="meta">
-	<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-01-29T19:20:35+08:00" pubdate data-updated="true"></time></div>
 	<div class="tags">
 
 

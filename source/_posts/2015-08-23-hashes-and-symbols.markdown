@@ -49,3 +49,4 @@ We can use `to_s` and `to_sym` to convert between strings and symbols. For examp
     :NYPD.to_s => "NYPD"
     "NYPD".to_sym => :NYPD
 
+Reference from [Codecademy](http://www.codecademy.com) ruby course.

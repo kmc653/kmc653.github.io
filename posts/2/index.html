@@ -7,7 +7,7 @@
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="Different models in Rails application would have the code that have the same logic or functionality. Using concerns to put these same code in a &hellip;">
+	<meta name="description" content="In Rails application, we usually send emails to notify users of something. Sending emails would not be fast because it need to rely on third party &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -74,6 +74,76 @@
 		
 	
 	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2015/01/31/use-sidekiq-to-send-emails-from-background-jobs/">
+		
+			Use Sidekiq to Send Emails From Background Jobs</a>
+	</h2>
+	<div class="entry-content">
+		<p>In Rails application, we usually send emails to notify users of something. Sending emails would not be fast because it need to rely on third party service ( e.q., Google, Yahoo, Mailgun ). We can put sending action in background process to make sure that application won&rsquo;t be held up.</p>
+
+<h1>Sidekiq</h1>
+
+<p>We can use sidekiq to make the jobs running in the background. It will avoid our app getting stuck if one of the processes broke.</p>
+
+<p>At first, add gem <code>sidekiq</code> in <code>Gemfile</code>, and then run <code>bundle install</code> from command line</p>
+
+<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;sidekiq&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For instance, if we want to send an invitation email to user, the code should be</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using <code>sidekiq</code>, we add <code>delay</code> to make sending action processing in background.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">AppMailer</span><span class="o">.</span><span class="n">delay</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We have to install <code>redis</code> server if we would like to set up background job processing locally. we can get Redis from here: <a href="http://redis.io/download">http://redis.io/download</a> .</p>
+
+<p>Typing <code>redis-server</code> to run redis, and then type <code>bundle exec sidekiq</code> on application to execute sidekiq, and then run Rails applicaion server to send emails.</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-31T15:41:25+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby-on-rails/'>ruby on rails</a>
+
+
+</div>
+	
+</div>
+</article>
 
 
     <article class="post">

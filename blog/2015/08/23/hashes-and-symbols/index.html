@@ -3,11 +3,11 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Category: ruby - Mr. Anderson</title>
+	<title>Hashes and Symbols in Ruby - Mr. Anderson</title>
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="Category: ruby">
+	<meta name="description" content="Hashes Ruby hashes are collections of key-value pairs. The key is unique and is associated with some value. For example: foods = { "American" =&gt; " &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -73,75 +73,100 @@
 	
 		
 	
-	<div id="content" class="inner">
-	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">Hashes and Symbols in Ruby</h2>
+	<div class="entry-content"><h1>Hashes</h1>
+
+<p>Ruby hashes are collections of key-value pairs. The key is unique and is associated with some value. For example:</p>
+
+<pre><code>foods = {
+  "American" =&gt; "hamburger",
+  "Italian" =&gt; "spaghetti",
+  "Chinese" =&gt; "dumpling"
+}
+</code></pre>
+
+<p>We also can use <code>symbol</code> to be the key:</p>
+
+<pre><code>foods = {
+  :American =&gt; "hamburger",
+  :Italian =&gt; "spaghetti",
+  :Chinese =&gt; "dumpling"
+}
+</code></pre>
+
+<p>It also can be represented like this without hash rocket <code>=&gt;</code> after Ruby 1.9 version:</p>
+
+<pre><code>foods = {
+  American: "hamburger",
+  Italian: "spaghetti",
+  Chinese: "dumpling"
+}
+</code></pre>
+
+<h1>Symbols</h1>
+
+<p>The key bahavior of <code>symbol</code> is that there&rsquo;s only one copy of any particular symbol at a given time, which is different from <code>string</code>. For example:</p>
+
+<pre><code>puts "queens".object_id
+puts "queens".object_id
+
+puts :queens.object_id
+puts :queens.object_id
+
+=&gt; 70182068437220
+   70182068393120
+   538248
+   538248
+</code></pre>
+
+<h1>Converting between symbols and strings</h1>
+
+<p>We can use <code>to_s</code> and <code>to_sym</code> to convert between strings and symbols. For example:</p>
+
+<pre><code>:NYPD.to_s =&gt; "NYPD"
+"NYPD".to_sym =&gt; :NYPD
+</code></pre>
+</div>
 
 
-	
-	
-	<section class="archives"><h1 class="year">2015</h1>
+<div class="meta">
+	<div class="date">
 
-<article>
-	<h2 class="title"><a href="/blog/2015/08/23/hashes-and-symbols/">Hashes and Symbols in Ruby</a></h2>
-	<div class="meta">
-		<div class="date">Aug 23</div>
-		<div class="tags">
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-08-23T16:18:49+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
 
 
 	<a class='category' href='/blog/categories/ruby/'>ruby</a>
 
 
 </div>
-	    
-	</div>
-</article>
 	
-
-	
-
-
-	
-	
-		</section>
-	
-	<section class="archives"><h1 class="year">2014</h1>
-
-<article>
-	<h2 class="title"><a href="/blog/2014/12/27/the-usage-of-method-number-strip-and-slice-of-string/">The Usage of strip, slice and split Methods of String</a></h2>
-	<div class="meta">
-		<div class="date">Dec 27</div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ruby/'>ruby</a>
-
-
 </div>
-	    
-	</div>
 </article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		<a class="addthis_button_tweet"></a>
+		
+		
+		
+	</div>
 	
-
-	
-
-
-<article>
-	<h2 class="title"><a href="/blog/2014/12/21/the-usage-of-collect-and-map-methods/">The Usage of Collect &amp; Map Methods</a></h2>
-	<div class="meta">
-		<div class="date">Dec 21</div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ruby/'>ruby</a>
-
-
 </div>
-	    
-	</div>
-</article>
-	
-	</section>
-	
+
 
 </div>
 	<footer id="footer" class="inner">Copyright &copy; 2015

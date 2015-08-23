@@ -4,7 +4,7 @@
   <title><![CDATA[Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-06-13T16:47:42+08:00</updated>
+  <updated>2015-08-23T16:50:26+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,66 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Hashes and Symbols in Ruby]]></title>
+    <link href="http://kmc653.github.io/blog/2015/08/23/hashes-and-symbols/"/>
+    <updated>2015-08-23T16:18:49+08:00</updated>
+    <id>http://kmc653.github.io/blog/2015/08/23/hashes-and-symbols</id>
+    <content type="html"><![CDATA[<h1>Hashes</h1>
+
+<p>Ruby hashes are collections of key-value pairs. The key is unique and is associated with some value. For example:</p>
+
+<pre><code>foods = {
+  "American" =&gt; "hamburger",
+  "Italian" =&gt; "spaghetti",
+  "Chinese" =&gt; "dumpling"
+}
+</code></pre>
+
+<p>We also can use <code>symbol</code> to be the key:</p>
+
+<pre><code>foods = {
+  :American =&gt; "hamburger",
+  :Italian =&gt; "spaghetti",
+  :Chinese =&gt; "dumpling"
+}
+</code></pre>
+
+<p>It also can be represented like this without hash rocket <code>=&gt;</code> after Ruby 1.9 version:</p>
+
+<pre><code>foods = {
+  American: "hamburger",
+  Italian: "spaghetti",
+  Chinese: "dumpling"
+}
+</code></pre>
+
+<h1>Symbols</h1>
+
+<p>The key bahavior of <code>symbol</code> is that there&rsquo;s only one copy of any particular symbol at a given time, which is different from <code>string</code>. For example:</p>
+
+<pre><code>puts "queens".object_id
+puts "queens".object_id
+
+puts :queens.object_id
+puts :queens.object_id
+
+=&gt; 70182068437220
+   70182068393120
+   538248
+   538248
+</code></pre>
+
+<h1>Converting between symbols and strings</h1>
+
+<p>We can use <code>to_s</code> and <code>to_sym</code> to convert between strings and symbols. For example:</p>
+
+<pre><code>:NYPD.to_s =&gt; "NYPD"
+"NYPD".to_sym =&gt; :NYPD
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Test doubles and method stubs]]></title>

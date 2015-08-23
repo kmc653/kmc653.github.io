@@ -7,7 +7,7 @@
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="Sometimes we use test double and method stub to replace objects or methods that aren&rsquo;t what we really want to test. It will help us write &hellip;">
+	<meta name="description" content="Hashes Ruby hashes are collections of key-value pairs. The key is unique and is associated with some value. For example: foods = { "American" =&gt &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -74,6 +74,98 @@
 		
 	
 	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2015/08/23/hashes-and-symbols/">
+		
+			Hashes and Symbols in Ruby</a>
+	</h2>
+	<div class="entry-content">
+		<h1>Hashes</h1>
+
+<p>Ruby hashes are collections of key-value pairs. The key is unique and is associated with some value. For example:</p>
+
+<pre><code>foods = {
+  "American" =&gt; "hamburger",
+  "Italian" =&gt; "spaghetti",
+  "Chinese" =&gt; "dumpling"
+}
+</code></pre>
+
+<p>We also can use <code>symbol</code> to be the key:</p>
+
+<pre><code>foods = {
+  :American =&gt; "hamburger",
+  :Italian =&gt; "spaghetti",
+  :Chinese =&gt; "dumpling"
+}
+</code></pre>
+
+<p>It also can be represented like this without hash rocket <code>=&gt;</code> after Ruby 1.9 version:</p>
+
+<pre><code>foods = {
+  American: "hamburger",
+  Italian: "spaghetti",
+  Chinese: "dumpling"
+}
+</code></pre>
+
+<h1>Symbols</h1>
+
+<p>The key bahavior of <code>symbol</code> is that there&rsquo;s only one copy of any particular symbol at a given time, which is different from <code>string</code>. For example:</p>
+
+<pre><code>puts "queens".object_id
+puts "queens".object_id
+
+puts :queens.object_id
+puts :queens.object_id
+
+=&gt; 70182068437220
+   70182068393120
+   538248
+   538248
+</code></pre>
+
+<h1>Converting between symbols and strings</h1>
+
+<p>We can use <code>to_s</code> and <code>to_sym</code> to convert between strings and symbols. For example:</p>
+
+<pre><code>:NYPD.to_s =&gt; "NYPD"
+"NYPD".to_sym =&gt; :NYPD
+</code></pre>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-08-23T16:18:49+08:00" pubdate data-updated="true"></time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ruby/'>ruby</a>
+
+
+</div>
+	
+</div>
+</article>
 
 
     <article class="post">
@@ -1399,76 +1491,6 @@ wordsfarm-staging git@heroku.com:wordsfarm-staging.git (push)
 
 
 	<a class='category' href='/blog/categories/ruby-on-rails-heroku/'>ruby on rails, heroku</a>
-
-
-</div>
-	
-</div>
-</article>
-
-
-    <article class="post">
-	<h2 class="title">
-		
-		<a href="/blog/2015/01/31/use-sidekiq-to-send-emails-from-background-jobs/">
-		
-			Use Sidekiq to Send Emails From Background Jobs</a>
-	</h2>
-	<div class="entry-content">
-		<p>In Rails application, we usually send emails to notify users of something. Sending emails would not be fast because it need to rely on third party service ( e.q., Google, Yahoo, Mailgun ). We can put sending action in background process to make sure that application won&rsquo;t be held up.</p>
-
-<h1>Sidekiq</h1>
-
-<p>We can use sidekiq to make the jobs running in the background. It will avoid our app getting stuck if one of the processes broke.</p>
-
-<p>At first, add gem <code>sidekiq</code> in <code>Gemfile</code>, and then run <code>bundle install</code> from command line</p>
-
-<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;sidekiq&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For instance, if we want to send an invitation email to user, the code should be</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Using <code>sidekiq</code>, we add <code>delay</code> to make sending action processing in background.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">AppMailer</span><span class="o">.</span><span class="n">delay</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We have to install <code>redis</code> server if we would like to set up background job processing locally. we can get Redis from here: <a href="http://redis.io/download">http://redis.io/download</a> .</p>
-
-<p>Typing <code>redis-server</code> to run redis, and then type <code>bundle exec sidekiq</code> on application to execute sidekiq, and then run Rails applicaion server to send emails.</p>
-
-		
-		
-	</div>
-
-
-<div class="meta">
-	<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-01-31T15:41:25+08:00" pubdate data-updated="true"></time></div>
-	<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ruby-on-rails/'>ruby on rails</a>
 
 
 </div>

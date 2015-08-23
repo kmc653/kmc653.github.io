@@ -3,11 +3,11 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Hashes and Symbols in Ruby - Mr. Anderson</title>
+	<title>Blocks, Procs, and Lambdas in Ruby - Mr. Anderson</title>
 	<meta name="author" content="Kai-Min Change">
 
 	
-	<meta name="description" content="Hashes Ruby hashes are collections of key-value pairs. The key is unique and is associated with some value. For example: foods = { "American" =&gt; " &hellip;">
+	<meta name="description" content="You must heard that &ldquo;Ererything is an object in Ruby&rdquo; when you start to learn Ruby. However, Blocks are not objects. Because of this, &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -74,59 +74,60 @@
 		
 	
 	<div id="content" class="inner"><article class="post">
-	<h2 class="title">Hashes and Symbols in Ruby</h2>
-	<div class="entry-content"><h1>Hashes</h1>
+	<h2 class="title">Blocks, Procs, and Lambdas in Ruby</h2>
+	<div class="entry-content"><p>You must heard that &ldquo;Ererything is an object in Ruby&rdquo; when you start to learn Ruby. However, <code>Blocks</code> are not objects. Because of this, blocks can&rsquo;t have any abilities like objects unless using <code>procs</code>.</p>
 
-<p>Ruby hashes are collections of key-value pairs. The key is unique and is associated with some value. For example:</p>
+<h1>Proc</h1>
 
-<pre><code>foods = {
-  "American" =&gt; "hamburger",
-  "Italian" =&gt; "spaghetti",
-  "Chinese" =&gt; "dumpling"
-}
+<p>We can name a block of code and turn it into a method by using <code>procs</code>, which means we can call it over and over without retype the block. This could avoid us from repeating codes.</p>
+
+<p>For example,</p>
+
+<pre><code>choose_even = Proc.new do |n|
+  n.even?
+end
+
+(1..10).to_a.select(&amp;choose_even)   =&gt; [2, 4, 6, 8, 10]
 </code></pre>
 
-<p>We also can use <code>symbol</code> to be the key:</p>
+<p>Some methods, like <code>.map</code>, <code>.collect</code> and <code>.select</code>, normally take a block, so the <code>&amp;</code> is used to convert proc into a block.</p>
 
-<pre><code>foods = {
-  :American =&gt; "hamburger",
-  :Italian =&gt; "spaghetti",
-  :Chinese =&gt; "dumpling"
-}
+<pre><code>square = Proc.new { |x| x ** 2 }
+
+[1, 2, 3].map(&amp;square)    =&gt; [1, 4, 9]
 </code></pre>
 
-<p>It also can be represented like this without hash rocket <code>=&gt;</code> after Ruby 1.9 version:</p>
+<p>We can user <code>.call</code> method to call proc directly.</p>
 
-<pre><code>foods = {
-  American: "hamburger",
-  Italian: "spaghetti",
-  Chinese: "dumpling"
-}
+<pre><code>test = Proc.new { puts "Hello!"}
+test.call
+
+=&gt; Hello!
 </code></pre>
 
-<h1>Symbols</h1>
+<p>By the way, we can pass ruby method name with a symbol.</p>
 
-<p>The key bahavior of <code>symbol</code> is that there&rsquo;s only one copy of any particular symbol at a given time, which is different from <code>string</code>. For example:</p>
-
-<pre><code>puts "queens".object_id
-puts "queens".object_id
-
-puts :queens.object_id
-puts :queens.object_id
-
-=&gt; 70182068437220
-   70182068393120
-   538248
-   538248
+<pre><code>n_array = [1, 2, 3, 4, 5]
+s_array = n_array.map(&amp;:to_s)   =&gt; ["1", "2", "3", "4", "5"]
 </code></pre>
 
-<h1>Converting between symbols and strings</h1>
+<h1>Lambda</h1>
 
-<p>We can use <code>to_s</code> and <code>to_sym</code> to convert between strings and symbols. For example:</p>
+<p><code>Lambda</code> is almost have the same behavior with <code>Proc</code>. <code>lambda { puts "Awesome!" }</code> is the same as <code>Proc.new { puts "Awesome!" }</code>.</p>
 
-<pre><code>:NYPD.to_s =&gt; "NYPD"
-"NYPD".to_sym =&gt; :NYPD
+<pre><code>movies = ["spyder man", "bat man", "iron man"]
+symbolize = lambda { |x| x.to_sym }
+
+symbols = movies.collect(&amp;symbolize)  =&gt; [:"spyder man", :"bat man", :"iron man"]
 </code></pre>
+
+<p>The difference between <code>Proc</code> and <code>Lambda</code> is that:</p>
+
+<ol>
+<li><p>lambda will check the number of arguments passed to it. It will throw an error if we pass the wrong number of arguments. Whereas a proc will ignore unexpected arguments and assign <code>nil</code> to any missing.</p></li>
+<li><p>When a lambda returns, it will go back to the calling method. However, proc won&rsquo;t go back to the calling method.</p></li>
+</ol>
+
 
 <p>Reference from <a href="http://www.codecademy.com">Codecademy</a> ruby course.</p>
 </div>
@@ -145,7 +146,7 @@ puts :queens.object_id
   
 
 
-<time datetime="2015-08-23T16:18:49+08:00" pubdate data-updated="true"></time></div>
+<time datetime="2015-08-23T18:25:35+08:00" pubdate data-updated="true"></time></div>
 	<div class="tags">
 
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | Mr. Anderson]]></title>
   <link href="http://kmc653.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://kmc653.github.io/"/>
-  <updated>2015-08-23T16:50:26+08:00</updated>
+  <updated>2015-08-23T19:35:03+08:00</updated>
   <id>http://kmc653.github.io/</id>
   <author>
     <name><![CDATA[Kai-Min Change]]></name>
@@ -12,6 +12,69 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Blocks, Procs, and Lambdas in Ruby]]></title>
+    <link href="http://kmc653.github.io/blog/2015/08/23/blocks-procs-and-lambdas-in-ruby/"/>
+    <updated>2015-08-23T18:25:35+08:00</updated>
+    <id>http://kmc653.github.io/blog/2015/08/23/blocks-procs-and-lambdas-in-ruby</id>
+    <content type="html"><![CDATA[<p>You must heard that &ldquo;Ererything is an object in Ruby&rdquo; when you start to learn Ruby. However, <code>Blocks</code> are not objects. Because of this, blocks can&rsquo;t have any abilities like objects unless using <code>procs</code>.</p>
+
+<h1>Proc</h1>
+
+<p>We can name a block of code and turn it into a method by using <code>procs</code>, which means we can call it over and over without retype the block. This could avoid us from repeating codes.</p>
+
+<p>For example,</p>
+
+<pre><code>choose_even = Proc.new do |n|
+  n.even?
+end
+
+(1..10).to_a.select(&amp;choose_even)   =&gt; [2, 4, 6, 8, 10]
+</code></pre>
+
+<p>Some methods, like <code>.map</code>, <code>.collect</code> and <code>.select</code>, normally take a block, so the <code>&amp;</code> is used to convert proc into a block.</p>
+
+<pre><code>square = Proc.new { |x| x ** 2 }
+
+[1, 2, 3].map(&amp;square)    =&gt; [1, 4, 9]
+</code></pre>
+
+<p>We can user <code>.call</code> method to call proc directly.</p>
+
+<pre><code>test = Proc.new { puts "Hello!"}
+test.call
+
+=&gt; Hello!
+</code></pre>
+
+<p>By the way, we can pass ruby method name with a symbol.</p>
+
+<pre><code>n_array = [1, 2, 3, 4, 5]
+s_array = n_array.map(&amp;:to_s)   =&gt; ["1", "2", "3", "4", "5"]
+</code></pre>
+
+<h1>Lambda</h1>
+
+<p><code>Lambda</code> is almost have the same behavior with <code>Proc</code>. <code>lambda { puts "Awesome!" }</code> is the same as <code>Proc.new { puts "Awesome!" }</code>.</p>
+
+<pre><code>movies = ["spyder man", "bat man", "iron man"]
+symbolize = lambda { |x| x.to_sym }
+
+symbols = movies.collect(&amp;symbolize)  =&gt; [:"spyder man", :"bat man", :"iron man"]
+</code></pre>
+
+<p>The difference between <code>Proc</code> and <code>Lambda</code> is that:</p>
+
+<ol>
+<li><p>lambda will check the number of arguments passed to it. It will throw an error if we pass the wrong number of arguments. Whereas a proc will ignore unexpected arguments and assign <code>nil</code> to any missing.</p></li>
+<li><p>When a lambda returns, it will go back to the calling method. However, proc won&rsquo;t go back to the calling method.</p></li>
+</ol>
+
+
+<p>Reference from <a href="http://www.codecademy.com">Codecademy</a> ruby course.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Hashes and Symbols in Ruby]]></title>
@@ -70,6 +133,8 @@ puts :queens.object_id
 <pre><code>:NYPD.to_s =&gt; "NYPD"
 "NYPD".to_sym =&gt; :NYPD
 </code></pre>
+
+<p>Reference from <a href="http://www.codecademy.com">Codecademy</a> ruby course.</p>
 ]]></content>
   </entry>
   
